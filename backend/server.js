@@ -1,26 +1,24 @@
 import express from "express";
 import dotenv from "dotenv";
-
+import { dbConfig } from "./config/dbConfig.js";
 import userRouter from "./router/userRouter.js";
 
 dotenv.config();
 
-import { dbConfig } from "./config/dbConfig.js";
-
 const app = express();
+const port = process.env.PORT || 5000;
 
-const port = process.env.PORT;
+(async () => {
+  await dbConfig();
 
-dbConfig();
+  app.use(express.json());
+  app.use("/api/v1/users", userRouter);
 
-app.use(express.json());
+  app.get("/", (req, res) => {
+    res.send("Hello, world!");
+  });
 
-app.use("/api/v1/users", userRouter);
-
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
-
-app.listen(port, () => {
-  console.log(`server is running at port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`🚀 Server is running on port ${port}`);
+  });
+})();

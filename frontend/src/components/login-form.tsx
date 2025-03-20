@@ -8,6 +8,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { Link } from "react-router"
 
 export function LoginForm({
   className,
@@ -27,7 +28,7 @@ export function LoginForm({
           <Input id="phoneNumber" type="number" placeholder="1234567890" required />
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="password">MPin</Label>
+          <Label htmlFor="password">M-PIN</Label>
           <InputOTP maxLength={6}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
@@ -47,9 +48,9 @@ export function LoginForm({
         </Button>
       </div>
       <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <a href="#" className="underline underline-offset-4">
-          Sign up
+        Don&apos;t have an account?
+        <a className="underline underline-offset-4">
+          <Link to="/signup" className="ml-1 underline text-blue-600 hover:text-blue-800"> Sign up</Link>
         </a>
       </div>
     </form>

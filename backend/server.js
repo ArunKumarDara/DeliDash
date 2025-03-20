@@ -5,9 +5,13 @@ import userRouter from "./router/userRouter.js";
 
 dotenv.config();
 
+import { dbConfig } from "./config/dbConfig.js";
+
 const app = express();
 
 const port = process.env.PORT;
+
+dbConfig();
 
 app.use(express.json());
 

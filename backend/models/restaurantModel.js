@@ -32,8 +32,15 @@ const restaurantSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now, index: true },
   location: {
-    type: { String, enum: ["point"], default: "point" },
-    coordinates: { type: [Number], required: true, index: "2dsphere" },
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
   },
 });
 

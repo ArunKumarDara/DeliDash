@@ -1,10 +1,13 @@
 import Restaurant from "../models/restaurantModel.js";
 
+// || !location?.coordinates
+
 export const addRestaurant = async (req, res) => {
   try {
-    const { name, phoneNumber, cuisineType, rating, location } = req.body;
+    const { name, phoneNumber, cuisineType, rating, location, address } =
+      req.body;
 
-    if (!name || !phoneNumber || !cuisineType || !location?.coordinates) {
+    if (!name || !phoneNumber || !cuisineType) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
@@ -20,9 +23,10 @@ export const addRestaurant = async (req, res) => {
 
     const restaurant = await Restaurant.create({
       name,
+      address,
       phoneNumber,
       cuisineType,
-      rating: rating || 0, // Default rating if not provided
+      rating: rating || 0,
       location,
     });
 
@@ -57,7 +61,7 @@ export const getRestaurants = async (req, res) => {
             type: "Point",
             coordinates: [longitude, latitude],
           },
-          $maxDistance: 5000, // 5km radius
+          $maxDistance: 5000,
         },
       };
     }

@@ -1,14 +1,88 @@
-import { sendOTP } from "../services/otpService.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export const sendOtp = async (req, res) => {
+import User from "../models/userModel.js";
+
+export const signup = async (req, res) => {
   try {
-    const { mobile } = req.body;
-    if (!mobile) {
-      return res.status(400).json({ message: "Mobile Number is required" });
+    const { phoneNumber, userName, mPin } = req.body;
+
+    if (!phoneNumber || !userName || !mPin) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
-    const response = await sendOTP(mobile);
-    res.status((response.success ? 200 : 500).json(response));
+
+    if (mPin.length !== 6 || isNaN(mPin)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "MPIN must be a 6-digit number" });
+    }
+
+    let user = await User.findOne({ phoneNumber });
+
+    if (user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
+    }
+
+    const hashedMpin = await bcrypt.hash(mPin.toString(), 10);
+
+    user = new User({ userName, phoneNumber, mPin: hashedMpin });
+    await user.save();
+
+    return res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
-    console.log(error);
+    console.error(`Error in signup: ${error.message}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const login = async (req, res) => {
+  const JWT_SECRET = process.env.JWT_SECRET;
+  try {
+    const { phoneNumber, mPin } = req.body;
+
+    if (!phoneNumber || !mPin) {
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number and MPIN are required",
+      });
+    }
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    const isMatch = await bcrypt.compare(mPin, user.mPin);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid MPIN" });
+    }
+
+    const token = jwt.sign({ id: user._id, mobile: user.mobile }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.cookie("authToken", token, {
+      httpOnly: true, // Prevent XSS attacks
+      secure: process.env.NODE_ENV === "production", // Only send in HTTPS (Production)
+      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Login successful", token });
+  } catch (error) {
+    console.error(`Error in login: ${error.message}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };

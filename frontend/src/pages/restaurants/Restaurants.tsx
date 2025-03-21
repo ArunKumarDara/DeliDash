@@ -33,6 +33,8 @@ interface Restaurant {
 export default function Restaurants() {
     const [priceRange, setPriceRange] = useState([0, 1000])
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
+    const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
 
     const {
         data,
@@ -41,8 +43,14 @@ export default function Restaurants() {
         hasNextPage,
         fetchNextPage,
     } = useInfiniteQuery({
-        queryKey: ["restaurants", searchTerm],
-        queryFn: ({ pageParam }) => getRestaurants({ pageParam, searchTerm }),
+        queryKey: ["restaurants", searchTerm, selectedCuisines, selectedRatings, priceRange],
+        queryFn: ({ pageParam }) => getRestaurants({
+            pageParam,
+            searchTerm,
+            cuisines: selectedCuisines,
+            ratings: selectedRatings,
+            priceRange,
+        }),
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
             return lastPage.totalPages > allPages.length ? allPages.length + 1 : undefined;
@@ -52,6 +60,14 @@ export default function Restaurants() {
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
+    };
+
+    const handleCuisineChange = (selectedCuisines: string[]) => {
+        setSelectedCuisines(selectedCuisines);
+    };
+
+    const handleRatingChange = (selectedRatings: number[]) => {
+        setSelectedRatings(selectedRatings);
     };
 
     const isEmpty = data?.pages?.every(page => page.data.length === 0);
@@ -89,6 +105,10 @@ export default function Restaurants() {
                             <FilterSidebar
                                 priceRange={priceRange}
                                 setPriceRange={setPriceRange}
+                                selectedCuisines={selectedCuisines}
+                                setSelectedCuisines={handleCuisineChange}
+                                selectedRatings={selectedRatings}
+                                setSelectedRatings={handleRatingChange}
                             />
                         </SheetContent>
                     </Sheet>
@@ -99,6 +119,10 @@ export default function Restaurants() {
                     <FilterSidebar
                         priceRange={priceRange}
                         setPriceRange={setPriceRange}
+                        selectedCuisines={selectedCuisines}
+                        setSelectedCuisines={handleCuisineChange}
+                        selectedRatings={selectedRatings}
+                        setSelectedRatings={handleRatingChange}
                     />
                 </div>
                 <div className="flex-1">

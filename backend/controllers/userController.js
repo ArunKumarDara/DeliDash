@@ -6,7 +6,6 @@ import User from "../models/userModel.js";
 export const signup = async (req, res) => {
   try {
     const { phoneNumber, userName, mPin } = req.body;
-
     if (!phoneNumber || !userName || !mPin) {
       return res
         .status(400)
@@ -65,9 +64,13 @@ export const login = async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid MPIN" });
     }
 
-    const token = jwt.sign({ id: user._id, mobile: user.mobile }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id, phoneNumber: user.phoneNumber },
+      JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.cookie("authToken", token, {
       httpOnly: true, // Prevent XSS attacks
@@ -81,6 +84,22 @@ export const login = async (req, res) => {
       .json({ success: true, message: "Login successful", token });
   } catch (error) {
     console.error(`Error in login: ${error.message}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-mPin");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    return res.status(200).json({ success: true, user });
+  } catch (error) {
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });

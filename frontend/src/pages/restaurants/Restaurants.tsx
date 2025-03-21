@@ -14,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -41,7 +42,7 @@ export default function Restaurants() {
         fetchNextPage,
     } = useInfiniteQuery({
         queryKey: ["restaurants", searchTerm],
-        queryFn: ({ pageParam }) => getRestaurants({ pageParam }),
+        queryFn: ({ pageParam }) => getRestaurants({ pageParam, searchTerm }),
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
             return lastPage.totalPages > allPages.length ? allPages.length + 1 : undefined;
@@ -49,9 +50,14 @@ export default function Restaurants() {
         staleTime: 1000 * 60 * 5,
     });
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const isEmpty = data?.pages?.every(page => page.data.length === 0);
+
     return (
         <div className="container mx-auto py-6 max-w-6xl">
-            {/* Header Section */}
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">Restaurants</h1>
@@ -65,6 +71,8 @@ export default function Restaurants() {
                         <Input
                             placeholder="Search restaurants..."
                             className="rounded-r-none"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                         />
                         <Button variant="secondary" className="rounded-l-none">
                             <Search className="h-4 w-4" />
@@ -86,20 +94,14 @@ export default function Restaurants() {
                     </Sheet>
                 </div>
             </div>
-
-            {/* Main Content */}
             <div className="flex flex-col md:flex-row gap-6">
-                {/* Desktop Filters Sidebar */}
                 <div className="hidden md:block w-[240px] flex-shrink-0">
                     <FilterSidebar
                         priceRange={priceRange}
                         setPriceRange={setPriceRange}
                     />
                 </div>
-
-                {/* Restaurant Grid */}
                 <div className="flex-1">
-                    {/* Sort Options */}
                     <div className="flex justify-end mb-4">
                         <Select defaultValue="recommended">
                             <SelectTrigger className="w-[180px]">
@@ -115,8 +117,18 @@ export default function Restaurants() {
                         </Select>
                     </div>
 
-                    {/* Restaurant Cards Grid */}
-                    {isLoading ? <div>loading....</div> :
+                    {isEmpty && !isLoading && (
+                        <div className="flex justify-center items-center h-[60vh]">
+                            <Alert variant="destructive" className="lg:w-3xl md:w-2xs mx-auto text-center">
+                                <AlertTitle>No Restaurants Found</AlertTitle>
+                                <AlertDescription className="text-center">
+                                    Unfortunately, we couldn't find any restaurants matching your search criteria.
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                    )}
+
+                    {isLoading ? <div className="lg:w-3xl md:w-2xs">loading....</div> :
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {data?.pages.map((page) =>
                                 page.data.map((restaurant: Restaurant) => (

@@ -8,6 +8,7 @@ import {
 import { Toaster } from "sonner";
 import Layout from "./pages/layout/Layout";
 import Home from "./pages/home/Home";
+import Restaurants from "./pages/restaurants/Restaurants";
 
 
 const queryClient = new QueryClient()
@@ -23,7 +24,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            {/* <Route path="restaurants" element={<Restaurants />} /> */}
+            <Route path="restaurants" element={<Restaurants />} />
             {/* <Route path="grocery" element={<Grocery />} /> */}
             {/* <Route path="bakes" element={<Bakes />} /> */}
           </Route>

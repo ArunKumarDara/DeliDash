@@ -23,6 +23,10 @@ const Layout = () => {
         )
     }
 
+    if (data?.user?.role === "admin") {
+        return <Navigate to="/admin/dashboard" replace />;
+    }
+
     if (isError || !data?.success) {
         return <Navigate to="/login" replace />;
     }

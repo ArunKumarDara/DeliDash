@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import Layout from "./pages/layout/Layout";
 import Home from "./pages/home/Home";
 import Restaurants from "./pages/restaurants/Restaurants";
+import Dashboard from "./pages/admin/Dashboard";
 
 
 const queryClient = new QueryClient()
@@ -28,6 +29,7 @@ function App() {
             {/* <Route path="grocery" element={<Grocery />} /> */}
             {/* <Route path="bakes" element={<Bakes />} /> */}
           </Route>
+          <Route path="/admin/dashboard" element={<Dashboard />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

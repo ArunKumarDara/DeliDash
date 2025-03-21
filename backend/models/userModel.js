@@ -2,23 +2,23 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    mobile: {
+    userName: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
       type: String,
       required: true,
       unique: true,
     },
-    otp: {
+    mPin: {
       type: String,
-      required: false,
-    },
-    otpExpires: {
-      type: Date,
-      required: false,
+      required: true,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: user,
+      default: "user",
     },
   },
   {

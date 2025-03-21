@@ -7,22 +7,28 @@ interface Props {
     title: string;
     description: string;
     path: string;
+    icon: React.ReactNode
 }
 
-const ServiceCard = ({ title, description, path }: Props) => {
+const ServiceCard = ({ title, description, path, icon }: Props) => {
     return (
-        <Card className="border-0 shadow-md">
-            <CardHeader>
-                <CardTitle>{title}</CardTitle>
+        <Card className="border-0 shadow-md flex flex-col items-center text-center p-4">
+            <CardHeader className="flex items-center gap-2 w-full justify-center">
+                <div className="text-primary">{icon}</div>
+                <CardTitle className="text-lg font-semibold">{title}</CardTitle>
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground">{description}</p>
             </CardContent>
             <CardFooter className="flex justify-center">
-                <Link to={path}><Button className="cursor-pointer" size="default">{path.charAt(0).toUpperCase() + path.slice(1)} <MoveRight /></Button></Link>
+                <Link to={path}>
+                    <Button className="cursor-pointer flex items-center gap-2">
+                        {path.charAt(0).toUpperCase() + path.slice(1)} <MoveRight />
+                    </Button>
+                </Link>
             </CardFooter>
         </Card>
-    )
-}
+    );
+};
 
-export default ServiceCard
+export default ServiceCard;

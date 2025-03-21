@@ -10,7 +10,7 @@ import { useNavigate } from "react-router"
 import { FC } from "react"
 
 interface Restaurant {
-    id: string;
+    _id: string;
     name: string;
     address: string;
     phoneNumber: string;
@@ -19,12 +19,13 @@ interface Restaurant {
     location?: string;
 }
 
-const RestaurantCard: FC<Restaurant> = ({ id, name, address, phoneNumber, cuisineType, rating }) => {
+const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisineType, rating }) => {
     const navigate = useNavigate()
 
     return (
-        <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(`/restaurants/${id}`)}>
-            <div className="relative">
+        <Card key={_id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-all"
+            onClick={() => navigate(`/restaurants/${_id}`)} >
+            <div className="relative" key={_id}>
                 <img
                     src={`https://via.placeholder.com/400x200?text=${name}`} // Placeholder image
                     alt={name}

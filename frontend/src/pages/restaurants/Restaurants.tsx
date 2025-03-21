@@ -16,9 +16,38 @@ import {
 } from "@/components/ui/select"
 import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getRestaurants } from "@/api/restaurant"
+
+interface Restaurant {
+    id: string;
+    name: string;
+    address: string;
+    phoneNumber: string;
+    cuisineType: string;
+    rating: number;
+    location?: string;
+}
 
 export default function Restaurants() {
     const [priceRange, setPriceRange] = useState([0, 1000])
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const {
+        data,
+        isLoading,
+        isFetchingNextPage,
+        hasNextPage,
+        fetchNextPage,
+    } = useInfiniteQuery({
+        queryKey: ["restaurants", searchTerm],
+        queryFn: ({ pageParam }) => getRestaurants({ pageParam }),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.totalPages > allPages.length ? allPages.length + 1 : undefined;
+        },
+        staleTime: 1000 * 60 * 5,
+    });
 
     return (
         <div className="container mx-auto py-6 max-w-6xl">
@@ -31,7 +60,6 @@ export default function Restaurants() {
                     </p>
                 </div>
 
-                {/* Search and Filter */}
                 <div className="flex gap-4">
                     <div className="flex w-full md:w-[300px]">
                         <Input
@@ -88,45 +116,28 @@ export default function Restaurants() {
                     </div>
 
                     {/* Restaurant Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {restaurants.map((restaurant) => (
-                            <RestaurantCard key={restaurant.id} {...restaurant} />
-                        ))}
-                    </div>
+                    {isLoading ? <div>loading....</div> :
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {data?.pages.map((page) =>
+                                page.data.map((restaurant: Restaurant) => (
+                                    <RestaurantCard key={restaurant.id} {...restaurant} />
+                                ))
+                            )}
+                        </div>}
+
+                    {hasNextPage && (
+                        <div className="flex justify-center mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => fetchNextPage()}
+                                disabled={isFetchingNextPage}
+                            >
+                                {isFetchingNextPage ? "Loading..." : "Load More"}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     )
 }
-
-
-
-
-
-
-// Sample Data
-const restaurants = [
-    {
-        id: 1,
-        name: "Burger King",
-        image: "/buregrking.jpg",
-        cuisines: ["American", "Fast Food", "Burgers"],
-        rating: 4.2,
-        deliveryTime: 25,
-        priceForTwo: 400,
-        offers: ["50% off up to ₹100", "Free delivery"],
-        isPromoted: true,
-    },
-    {
-        id: 2,
-        name: "Pizza Hut",
-        image: "https://source.unsplash.com/800x600/?pizza",
-        cuisines: ["Italian", "Pizza", "Fast Food"],
-        rating: 4.0,
-        deliveryTime: 35,
-        priceForTwo: 600,
-        offers: ["20% off on large pizzas"],
-        isPromoted: false,
-    },
-    // Add more restaurants...
-]

@@ -2,7 +2,7 @@ import Footer from '@/components/footer/Footer'
 import Navbar from "@/components/navbar/Navbar"
 import { Outlet, Navigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
-import { getUser } from "../../../api/user"
+import { getUser } from "../../api/user"
 import { LoaderCircle } from "lucide-react"
 
 const Layout = () => {
@@ -16,7 +16,6 @@ const Layout = () => {
 
     if (isPending) {
         return (
-
             <div className="flex items-center justify-center h-screen">
                 <LoaderCircle className="w-12 h-12 text-black animate-spin" />
             </div>

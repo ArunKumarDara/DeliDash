@@ -8,7 +8,18 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router"
 
-export default function RestaurantCard({ name, image, cuisines, rating, deliveryTime, priceForTwo, offers, isPromoted }: any) {
+interface RestaurantProps {
+    name: string;
+    image: string;
+    cuisines: string[];
+    rating: number;
+    deliveryTime: number;
+    priceForTwo: number;
+    offers?: string[];
+    isPromoted?: boolean;
+}
+
+export default function RestaurantCard({ name, image, cuisines, rating, deliveryTime, priceForTwo, offers, isPromoted }: RestaurantProps) {
     const navigate = useNavigate()
     return (
         <Card className="overflow-hidden hover:shadow-lg transition-all" onClick={() => navigate(`/restaurants/${name}`)}>

@@ -53,6 +53,20 @@ export const getRestaurants = async (req, res) => {
       query.name = { $regex: req.query.search, $options: "i" }; // Use the search term to filter by restaurant name
     }
 
+    if (req.query.cuisines) {
+      query.cuisineType = { $in: req.query.cuisines.split(",") }; // Support multiple cuisines
+    }
+
+    if (req.query.ratings) {
+      const ratings = req.query.ratings.split(",").map(Number);
+      query.rating = { $in: ratings }; // Support multiple ratings
+    }
+
+    if (req.query.priceRange) {
+      const [minPrice, maxPrice] = req.query.priceRange.split(",");
+      query.price = { $gte: minPrice, $lte: maxPrice }; // Assuming you have a price field in your model
+    }
+
     if (req.query.longitude && req.query.latitude) {
       const longitude = parseFloat(req.query.longitude);
       const latitude = parseFloat(req.query.latitude);

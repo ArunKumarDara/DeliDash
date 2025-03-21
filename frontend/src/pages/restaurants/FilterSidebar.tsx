@@ -107,5 +107,4 @@ const cuisines = [
     "Chinese",
     "Fast Food",
     "Other"
-    // Add more cuisines...
 ]

@@ -7,58 +7,54 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router"
+import { FC } from "react"
 
-interface RestaurantProps {
+interface Restaurant {
+    id: string;
     name: string;
-    image: string;
-    cuisines: string[];
+    address: string;
+    phoneNumber: string;
+    cuisineType: string;
     rating: number;
-    deliveryTime: number;
-    priceForTwo: number;
-    offers?: string[];
-    isPromoted?: boolean;
+    location?: string;
 }
 
-export default function RestaurantCard({ name, image, cuisines, rating, deliveryTime, priceForTwo, offers, isPromoted }: RestaurantProps) {
+const RestaurantCard: FC<Restaurant> = ({ id, name, address, phoneNumber, cuisineType, rating }) => {
     const navigate = useNavigate()
+
     return (
-        <Card className="overflow-hidden hover:shadow-lg transition-all" onClick={() => navigate(`/restaurants/${name}`)}>
+        <Card className="overflow-hidden cursor-pointer hover:shadow-lg transition-all" onClick={() => navigate(`/restaurants/${id}`)}>
             <div className="relative">
                 <img
-                    src={image}
+                    src={`https://via.placeholder.com/400x200?text=${name}`} // Placeholder image
                     alt={name}
-                    className="w-full h-[200px] object-cover"
+                    className="w-full h-[150px] object-cover"
                 />
-                {isPromoted && (
-                    <Badge className="absolute top-2 left-2" variant="secondary">
-                        Promoted
-                    </Badge>
-                )}
-                {offers && offers.length > 0 && (
-                    <div className="absolute bottom-2 left-2 right-2 bg-black/50 text-white text-sm p-2 rounded">
-                        <p className="line-clamp-1">🎉 {offers[0]}</p>
-                    </div>
-                )}
             </div>
+
             <CardHeader className="pb-2">
-                <CardTitle className="text-lg">{name}</CardTitle>
-                <CardDescription className="line-clamp-1">
-                    {cuisines.join(", ")}
-                </CardDescription>
+                <div className="flex justify-between items-start gap-5 w-full">
+                    <div>
+                        <CardTitle className="text-lg">{name}</CardTitle>
+                        <CardDescription className="line-clamp-1">
+                            {cuisineType}
+                        </CardDescription>
+                    </div>
+                    <Badge variant={rating >= 4.0 ? "default" : "secondary"}>
+                        ⭐ {rating}
+                    </Badge>
+                </div>
             </CardHeader>
+
             <CardContent>
-                <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-1">
-                        <Badge variant={rating >= 4.0 ? "default" : "secondary"}>
-                            ⭐ {rating}
-                        </Badge>
-                    </span>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">{deliveryTime} mins</span>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">₹{priceForTwo} for two</span>
+                <div className="flex items-center gap-4 justify-between text-sm">
+                    <span className="text-muted-foreground">{address}</span>
+                    <span className="text-muted-foreground">-</span>
+                    <span className="text-muted-foreground">{phoneNumber}</span>
                 </div>
             </CardContent>
         </Card>
     )
 }
+
+export default RestaurantCard;

@@ -9,10 +9,30 @@ interface ApiError {
   message?: string;
 }
 
-export const getRestaurants = async ({ pageParam = 1 }) => {
+export const getRestaurants = async ({
+  pageParam = 1,
+  searchTerm = "",
+  cuisines = [],
+  ratings = [],
+  priceRange = [0, 1000],
+}: {
+  pageParam: number;
+  searchTerm: string;
+  cuisines: string[];
+  ratings: number[];
+  priceRange: number[];
+}) => {
   try {
     const response = await API.get("/restaurants/get", {
-      params: { page: pageParam, limit: 6 }, // Fetching 6 restaurants per request
+      params: {
+        page: pageParam,
+        limit: 6,
+        search: searchTerm,
+        cuisines: cuisines.join(","),
+        ratings: ratings.join(","),
+        priceMin: priceRange[0],
+        priceMax: priceRange[1],
+      },
       withCredentials: true,
     });
     return response.data;

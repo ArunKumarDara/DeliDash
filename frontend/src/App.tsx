@@ -10,6 +10,7 @@ import Layout from "./pages/layout/Layout";
 import Home from "./pages/home/Home";
 import Restaurants from "./pages/restaurants/Restaurants";
 import Dashboard from "./pages/admin/Dashboard";
+import RestaurantMenu from "./pages/restaurants/Menu";
 
 
 const queryClient = new QueryClient()
@@ -25,7 +26,10 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="restaurants" element={<Restaurants />} />
+            <Route path="restaurants" >
+              <Route index element={<Restaurants />} />
+              <Route path=":name" element={<RestaurantMenu />} /> {/* Dynamic route using 'name' */}
+            </Route>
             {/* <Route path="grocery" element={<Grocery />} /> */}
             {/* <Route path="bakes" element={<Bakes />} /> */}
           </Route>

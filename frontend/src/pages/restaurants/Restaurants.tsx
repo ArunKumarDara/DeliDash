@@ -21,7 +21,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant"
 
 interface Restaurant {
-    id: string;
+    _id: string;
     name: string;
     address: string;
     phoneNumber: string;
@@ -156,7 +156,7 @@ export default function Restaurants() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {data?.pages.map((page) =>
                                 page.data.map((restaurant: Restaurant) => (
-                                    <RestaurantCard key={restaurant.id} {...restaurant} />
+                                    <RestaurantCard key={restaurant._id} {...restaurant} />
                                 ))
                             )}
                         </div>}

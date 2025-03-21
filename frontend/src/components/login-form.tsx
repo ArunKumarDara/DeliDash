@@ -13,7 +13,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { loginUser } from "../../api/user"
+import { loginUser } from "../api/user"
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage, FormControl } from "@/components/ui/form";
 

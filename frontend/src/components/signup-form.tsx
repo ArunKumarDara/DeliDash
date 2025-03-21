@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, } from '@tanstack/react-query'
-import { signupUser } from "../../api/user"
+import { signupUser } from "../api/user"
 import { toast } from "sonner"
 
 const formSchema = z.object({

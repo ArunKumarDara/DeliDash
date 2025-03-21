@@ -48,8 +48,9 @@ export const getRestaurants = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const query = {};
-    if (req.query.name) {
-      query.name = { $regex: req.query.name, $options: "i" };
+
+    if (req.query.search) {
+      query.name = { $regex: req.query.search, $options: "i" }; // Use the search term to filter by restaurant name
     }
 
     if (req.query.longitude && req.query.latitude) {

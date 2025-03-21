@@ -8,14 +8,34 @@ import { Slider } from "@/components/ui/slider"
 
 
 interface FilterSidebarProps {
-    priceRange: number[]
-    setPriceRange: (value: number[]) => void
-    isSheet?: boolean
+    priceRange: number[];
+    setPriceRange: (value: [number, number]) => void;
+    isSheet?: boolean;
+    selectedCuisines: string[];
+    setSelectedCuisines: (selectedCuisines: string[]) => void;
+    selectedRatings: number[];
+    setSelectedRatings: (selectedRatings: number[]) => void;
 }
 
-export default function FilterSidebar({ priceRange, setPriceRange, isSheet }: FilterSidebarProps) {
+export default function FilterSidebar({ priceRange, setPriceRange, selectedCuisines, setSelectedCuisines, selectedRatings, setSelectedRatings, isSheet }: FilterSidebarProps) {
+
+    const handleCuisineChange = (cuisine: string) => {
+        const newSelectedCuisines = selectedCuisines.includes(cuisine)
+            ? selectedCuisines.filter((item) => item !== cuisine)
+            : [...selectedCuisines, cuisine];
+        setSelectedCuisines(newSelectedCuisines);
+    };
+
+    const handleRatingChange = (rating: number) => {
+        const newSelectedRatings = selectedRatings.includes(rating)
+            ? selectedRatings.filter((item) => item !== rating)
+            : [...selectedRatings, rating];
+        setSelectedRatings(newSelectedRatings);
+    };
+
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-6">
             {isSheet && (
                 <SheetHeader>
                     <SheetTitle>Filters</SheetTitle>
@@ -23,11 +43,14 @@ export default function FilterSidebar({ priceRange, setPriceRange, isSheet }: Fi
             )}
             <div className="space-y-4">
                 <h3 className="font-medium">Cuisines</h3>
-                <ScrollArea className="h-[200px]">
+                <ScrollArea className="h-[100px]">
                     <div className="space-y-3">
                         {cuisines.map((cuisine) => (
                             <div key={cuisine} className="flex items-center space-x-2">
-                                <Checkbox id={cuisine} />
+                                <Checkbox id={cuisine}
+                                    checked={selectedCuisines.includes(cuisine)}
+                                    onCheckedChange={() => handleCuisineChange(cuisine)}
+                                />
                                 <label
                                     htmlFor={cuisine}
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -62,7 +85,8 @@ export default function FilterSidebar({ priceRange, setPriceRange, isSheet }: Fi
                 <div className="space-y-3">
                     {[4.5, 4.0, 3.5, 3.0].map((rating) => (
                         <div key={rating} className="flex items-center space-x-2">
-                            <Checkbox id={`rating-${rating}`} />
+                            <Checkbox id={`rating-${rating}`} checked={selectedRatings.includes(rating)}
+                                onCheckedChange={() => handleRatingChange(rating)} />
                             <label
                                 htmlFor={`rating-${rating}`}
                                 className="text-sm font-medium leading-none"
@@ -79,16 +103,9 @@ export default function FilterSidebar({ priceRange, setPriceRange, isSheet }: Fi
 
 
 const cuisines = [
-    "American",
-    "Chinese",
-    "Italian",
     "Indian",
-    "Japanese",
-    "Mexican",
-    "Thai",
-    "Mediterranean",
+    "Chinese",
     "Fast Food",
-    "Desserts",
-    "Beverages",
+    "Other"
     // Add more cuisines...
 ]

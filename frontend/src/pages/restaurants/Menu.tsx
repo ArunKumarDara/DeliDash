@@ -167,7 +167,7 @@ export default function RestaurantMenu() {
                 {/* Menu Items */}
                 <div className="space-y-8">
                     {isLoading ? (
-                        <div className="text-center py-8">Loading menu items...</div>
+                        <div className="text-center py-8 ">Loading menu items...</div>
                     ) : isMenuEmpty ? (
                         <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
                             <div className="text-6xl">🍽️</div>

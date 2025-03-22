@@ -45,3 +45,20 @@ export const getRestaurants = async ({
     );
   }
 };
+
+export const getRestaurantById = async (restaurantId: string) => {
+  try {
+    const response = await API.get(`/restaurants/getById`, {
+      params: { id: restaurantId },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to fetch restaurant details. Please try again."
+    );
+  }
+};

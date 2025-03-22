@@ -12,9 +12,13 @@ interface ApiError {
 export const getMenuItems = async ({
   pageParam = 1,
   restaurantId,
+  search,
+  category,
 }: {
   pageParam: number;
   restaurantId: string;
+  search: string;
+  category: string;
 }) => {
   try {
     const response = await API.get("/menu/get", {
@@ -22,6 +26,8 @@ export const getMenuItems = async ({
         page: pageParam,
         limit: 10,
         restaurantId,
+        search,
+        category,
       },
       withCredentials: true,
     });

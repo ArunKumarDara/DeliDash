@@ -14,7 +14,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -142,13 +141,20 @@ export default function Restaurants() {
                     </div>
 
                     {isEmpty && !isLoading && (
-                        <div className="flex justify-center items-center h-[60vh]">
-                            <Alert variant="destructive" className="lg:w-3xl md:w-2xs mx-auto text-center">
-                                <AlertTitle>No Restaurants Found</AlertTitle>
-                                <AlertDescription className="text-center">
-                                    Unfortunately, we couldn't find any restaurants matching your search criteria.
-                                </AlertDescription>
-                            </Alert>
+                        <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                            <div className="text-6xl">🍽️</div>
+                            <h3 className="text-xl font-semibold">No Restaurants Available</h3>
+                            <p className="text-muted-foreground text-center max-w-md">
+                                Sorry, currently there are no restaurants available.
+                                Please check back later or contact the restaurant for more information.
+                            </p>
+                            <Button
+                                variant="outline"
+                                onClick={() => window.location.reload()}
+                                className="mt-4"
+                            >
+                                Refresh Menu
+                            </Button>
                         </div>
                     )}
 

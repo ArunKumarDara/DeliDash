@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/popover";
 import { useState, useCallback } from "react";
 import { debounce } from "lodash"
-import { Cart } from "@/components/cart/Cart";
 
 
 interface MenuItem {
@@ -109,8 +108,6 @@ export default function RestaurantMenu() {
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <Cart />
-
                     <div className="lg:hidden flex-shrink-0">
                         <Popover>
                             <PopoverTrigger asChild>

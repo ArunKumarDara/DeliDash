@@ -28,7 +28,7 @@ function App() {
             <Route index element={<Home />} />
             <Route path="restaurants" >
               <Route index element={<Restaurants />} />
-              <Route path=":name" element={<RestaurantMenu />} /> {/* Dynamic route using 'name' */}
+              <Route path=":restaurantId" element={<RestaurantMenu />} /> {/* Dynamic route using 'name' */}
             </Route>
             {/* <Route path="grocery" element={<Grocery />} /> */}
             {/* <Route path="bakes" element={<Bakes />} /> */}

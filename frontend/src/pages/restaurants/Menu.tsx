@@ -1,24 +1,22 @@
-import { useState } from "react";
-import { Search, ShoppingBag } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
     Card,
 } from "@/components/ui/card";
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getMenuItems } from "@/api/menu";
 import { useParams } from "react-router"
 import { getRestaurantById } from "@/api/restaurant";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { useState, useCallback } from "react";
+import { debounce } from "lodash"
 
 
 interface MenuItem {
@@ -34,10 +32,12 @@ interface MenuItem {
 
 
 export default function RestaurantMenu() {
-    const [cart, setCart] = useState<{ item: MenuItem; quantity: number }[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
     const params = useParams()
 
     const restaurantId = params.restaurantId ?? ""
+
 
     const { data: restaurant, isLoading: isRestaurantLoading } = useQuery({
         queryKey: ["restaurant", restaurantId],
@@ -48,57 +48,43 @@ export default function RestaurantMenu() {
     });
 
     const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useInfiniteQuery({
-        queryKey: ["menu"],
-        queryFn: ({ pageParam = 1 }) => getMenuItems({ restaurantId, pageParam: pageParam }),
+        queryKey: ["menu", restaurantId, searchQuery, selectedCategory],
+        queryFn: ({ pageParam = 1 }) => getMenuItems({
+            restaurantId,
+            pageParam,
+            search: searchQuery,
+            category: selectedCategory
+        }),
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
             return lastPage.totalPages > allPages.length ? allPages.length + 1 : undefined;
         },
         retry: false,
         staleTime: 1000 * 60 * 5
-    })
+    });
 
-    const addToCart = (item: MenuItem) => {
-        setCart((prevCart) => {
-            const existingItem = prevCart.find((cartItem) => cartItem.item.id === item.id);
-            if (existingItem) {
-                return prevCart.map((cartItem) =>
-                    cartItem.item.id === item.id
-                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                        : cartItem
-                );
-            }
-            return [...prevCart, { item, quantity: 1 }];
-        });
+    // Debounce search to prevent too many API calls
+    const debouncedSearch = useCallback(
+        debounce((value: string) => {
+            setSearchQuery(value);
+        }, 500),
+        []
+    );
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        debouncedSearch(e.target.value);
     };
 
-    const removeFromCart = (itemId: number) => {
-        setCart((prevCart) =>
-            prevCart
-                .map((cartItem) =>
-                    cartItem.item.id === itemId
-                        ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                        : cartItem
-                )
-                .filter((cartItem) => cartItem.quantity > 0)
-        );
-    };
-
-    const getItemQuantity = (itemId: number) => {
-        const item = cart.find((cartItem) => cartItem.item.id === itemId);
-        return item ? item.quantity : 0;
-    };
-
-    const getTotalPrice = () => {
-        return cart.reduce((total, cartItem) => total + cartItem.item.price * cartItem.quantity, 0);
+    const handleCategorySelect = (categoryId: string) => {
+        setSelectedCategory(categoryId === selectedCategory ? "" : categoryId);
     };
 
     const isMenuEmpty = data?.pages?.every(page => page.data?.length === 0);
     console.log(restaurant)
     return (
-        <div className="container mx-auto px-4 py-6">
-            <div className="mb-8">
-                {isRestaurantLoading ? <Skeleton className="w-[100px] h-[20px] rounded-full" /> : <>
+        <div className="container mx-auto py-4">
+            <div className="md:mb-8">
+                {isRestaurantLoading ? <Skeleton className="w-[100px] h-[20px] rounded-full text-start" /> : <div className="p-4 md:p-0">
                     <h1 className="text-3xl text-start font-bold tracking-tight">{restaurant.data.name}</h1>
                     <div className="flex items-center gap-2 mt-2 text-muted-foreground">
                         <span>{restaurant.data.address}</span>
@@ -107,46 +93,76 @@ export default function RestaurantMenu() {
                         <span>•</span>
                         <Badge variant="secondary">⭐ {restaurant.data.rating}</Badge>
                     </div>
-                </>}
+                </div>}
             </div>
-            <div className="flex items-center justify-between mb-6">
+            {/* <Separator className="text-gray-500 mb-3" /> */}
+            <div className="flex items-center justify-between mb-3 p-4 md:p-0 gap-4">
                 <div className="relative w-full max-w-sm">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search menu items..." className="pl-8" />
+                    <Input
+                        placeholder="Search menu items..."
+                        className="pl-8"
+                        onChange={handleSearch}
+                    />
                 </div>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button className="ml-4">
-                            <ShoppingBag className="mr-2 h-4 w-4" />
-                            Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent>
-                        <CartSidebar cart={cart} removeFromCart={removeFromCart} total={getTotalPrice()} />
-                    </SheetContent>
-                </Sheet>
+                <div className="lg:hidden flex-shrink-0">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-10 w-10"
+                            >
+                                <Filter className="h-4 w-4" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                            className="w-[200px] p-2"
+                            align="end"
+                        >
+                            <nav className="space-y-1">
+                                {menuCategories.map((category) => (
+                                    <Button
+                                        key={category.id}
+                                        variant={selectedCategory === category.id ? "secondary" : "ghost"}
+                                        className="w-full justify-start h-9 font-normal text-sm"
+                                        onClick={() => handleCategorySelect(category.id)}
+                                    >
+                                        {category.name}
+                                    </Button>
+                                ))}
+                            </nav>
+                        </PopoverContent>
+                    </Popover>
+                </div>
             </div>
-
             {/* Menu Categories and Items */}
             <div className="flex gap-6">
-                {/* Categories Navigation */}
+                {/* Desktop Categories */}
                 <div className="hidden lg:block w-[240px] space-y-4 text-start">
                     <h2 className="font-semibold">Menu Categories</h2>
                     <nav className="space-y-2">
                         {menuCategories.map((category) => (
-                            <a key={category.id} href={`#${category.id}`} className="block p-2 rounded-lg hover:bg-accent text-sm">
-                                {category.name} ({category.items.length})
-                            </a>
+                            <button
+                                key={category.id}
+                                onClick={() => handleCategorySelect(category.id)}
+                                className={`block w-full text-start p-2 rounded-lg text-sm transition-colors ${selectedCategory === category.id
+                                    ? 'bg-accent text-accent-foreground'
+                                    : 'hover:bg-accent/50'
+                                    }`}
+                            >
+                                {category.name}
+                            </button>
                         ))}
                     </nav>
                 </div>
 
                 {/* Menu Items */}
-                <div className="flex-1 space-y-8">
+                <div className="space-y-8">
                     {isLoading ? (
                         <div className="text-center py-8">Loading menu items...</div>
                     ) : isMenuEmpty ? (
-                        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                        <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
                             <div className="text-6xl">🍽️</div>
                             <h3 className="text-xl font-semibold">No Menu Items Available</h3>
                             <p className="text-muted-foreground text-center max-w-md">
@@ -162,16 +178,42 @@ export default function RestaurantMenu() {
                             </Button>
                         </div>
                     ) : (
-                        <div className="space-y-8 lg:w-3xl md:w-2xs">
+                        <div className="space-y-8 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                            {/* Active filters display */}
+                            {(searchQuery || selectedCategory) && (
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    {searchQuery && (
+                                        <Badge variant="secondary" className="gap-1">
+                                            Search: {searchQuery}
+                                            <button
+                                                onClick={() => setSearchQuery("")}
+                                                className="ml-1 hover:text-foreground"
+                                            >
+                                                ×
+                                            </button>
+                                        </Badge>
+                                    )}
+                                    {selectedCategory && (
+                                        <Badge variant="secondary" className="gap-1">
+                                            {menuCategories.find(c => c.id === selectedCategory)?.name}
+                                            <button
+                                                onClick={() => setSelectedCategory("")}
+                                                className="ml-1 hover:text-foreground"
+                                            >
+                                                ×
+                                            </button>
+                                        </Badge>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Menu items list */}
                             {data?.pages.map((page, pageIndex) => (
                                 <div key={pageIndex} className="space-y-4">
                                     {page.data.map((item: MenuItem) => (
                                         <MenuItem
                                             key={item.id}
                                             item={item}
-                                            onAddToCart={() => addToCart(item)}
-                                            onRemoveFromCart={() => removeFromCart(item.id)}
-                                            quantity={getItemQuantity(item.id)}
                                         />
                                     ))}
                                 </div>
@@ -221,7 +263,8 @@ interface MenuItem {
     isBestseller?: boolean;
 }
 
-function MenuItem({ item, onAddToCart, onRemoveFromCart, quantity }: { item: MenuItem; onAddToCart: () => void; onRemoveFromCart: () => void; quantity: number }) {
+function MenuItem({ item }: { item: MenuItem }) {
+    const quantity = 0
     return (
         <Card className="group hover:shadow-lg transition-shadow duration-200">
             <div className="flex p-4 gap-4">
@@ -230,7 +273,6 @@ function MenuItem({ item, onAddToCart, onRemoveFromCart, quantity }: { item: Men
                     <div className="flex items-start justify-between">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                                {/* Veg/Non-veg indicator with better styling */}
                                 {item.isVeg ? (
                                     <div className="w-4 h-4 border-2 border-green-600 p-0.5">
                                         <div className="w-full h-full rounded-full bg-green-600" />
@@ -269,15 +311,15 @@ function MenuItem({ item, onAddToCart, onRemoveFromCart, quantity }: { item: Men
                         {quantity > 0 ? (
                             <div className="flex items-center border rounded-lg overflow-hidden cursor-pointer">
                                 <Button
-                                    onClick={onRemoveFromCart}
+                                    // onClick={onRemoveFromCart}
                                     variant="ghost"
                                     className="h-9 px-3 hover:bg-primary/10 cursor-pointer"
                                 >
                                     -
                                 </Button>
-                                <span className="w-10 text-center font-medium">{quantity}</span>
+                                <span className="w-10 text-center font-medium">{0}</span>
                                 <Button
-                                    onClick={onAddToCart}
+                                    // onClick={onAddToCart}
                                     variant="ghost"
                                     className="h-9 px-3 hover:bg-primary/10 cursor-pointer"
                                 >
@@ -286,7 +328,7 @@ function MenuItem({ item, onAddToCart, onRemoveFromCart, quantity }: { item: Men
                             </div>
                         ) : (
                             <Button
-                                onClick={onAddToCart}
+                                // onClick={onAddToCart}
                                 variant="outline"
                                 className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
                             >
@@ -300,65 +342,24 @@ function MenuItem({ item, onAddToCart, onRemoveFromCart, quantity }: { item: Men
     );
 }
 
-function CartSidebar({ cart, removeFromCart, total }: { cart: { item: MenuItem; quantity: number }[]; removeFromCart: (id: number) => void; total: number }) {
-    return (
-        <div className="h-full flex flex-col">
-            <SheetHeader>
-                <SheetTitle>Your Cart ({cart.length} items)</SheetTitle>
-            </SheetHeader>
-            <ScrollArea className="flex-1 -mx-4 px-4">
-                <div className="space-y-4 py-4">
-                    {cart.map((cartItem) => (
-                        <div key={cartItem.item.id} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                {cartItem.item.isVeg ? "🟢" : "🔴"}
-                                <p className="font-medium">{cartItem.item.name} ({cartItem.quantity})</p>
-                            </div>
-                            <Button variant="ghost" size="sm" onClick={() => removeFromCart(cartItem.item.id)}>Remove</Button>
-                        </div>
-                    ))}
-                </div>
-            </ScrollArea>
-            <div className="border-t pt-4">
-                <div className="flex justify-between font-semibold">Total: ₹{total}</div>
-                <Button className="w-full mt-2">Checkout</Button>
-            </div>
-        </div>
-    );
-}
-
 const menuCategories = [
     {
         id: "recommended",
         name: "Recommended",
-        items: [
-            {
-                id: 1,
-                name: "Whopper",
-                description: "Our signature flame-grilled beef patty topped with fresh lettuce, tomatoes, mayo, and pickles on a sesame seed bun",
-                price: 199,
-                image: "https://source.unsplash.com/400x300/?burger",
-                isVeg: false,
-                isBestseller: true,
-            },
-            // Add more items...
-        ],
     },
     {
-        id: "burgers",
-        name: "Burgers",
-        items: [
-            {
-                id: 2,
-                name: "Veg Whopper",
-                description: "Plant-based patty with fresh vegetables and our signature sauce",
-                price: 169,
-                image: "https://source.unsplash.com/400x300/?vegburger",
-                isVeg: true,
-                isSpicy: true,
-            },
-            // Add more items...
-        ],
+        id: "bestSellers",
+        name: "Best Sellers"
     },
-    // Add more categories...
+    {
+        id: "veg",
+        name: "Veg",
+    },
+    {
+        id: "nonVeg",
+        name: "Non-Veg"
+    }, {
+        id: "spicy",
+        name: "Spicy"
+    }
 ]

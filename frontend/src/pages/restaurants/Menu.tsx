@@ -10,6 +10,9 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { getMenuItems } from "@/api/menu";
 import { useParams } from "react-router"
 import { getRestaurantById } from "@/api/restaurant";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeFromCart } from '@/store/cartSlice';
+import type { RootState } from '@/store/store';
 import {
     Popover,
     PopoverContent,
@@ -17,10 +20,11 @@ import {
 } from "@/components/ui/popover";
 import { useState, useCallback } from "react";
 import { debounce } from "lodash"
+import { Cart } from "@/components/cart/Cart";
 
 
 interface MenuItem {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     price: number;
@@ -80,7 +84,6 @@ export default function RestaurantMenu() {
     };
 
     const isMenuEmpty = data?.pages?.every(page => page.data?.length === 0);
-    console.log(restaurant)
     return (
         <div className="container mx-auto py-4">
             <div className="md:mb-8">
@@ -105,35 +108,39 @@ export default function RestaurantMenu() {
                         onChange={handleSearch}
                     />
                 </div>
-                <div className="lg:hidden flex-shrink-0">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="h-10 w-10"
+                <div className="flex items-center gap-2">
+                    <Cart />
+
+                    <div className="lg:hidden flex-shrink-0">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-10 w-10"
+                                >
+                                    <Filter className="h-4 w-4" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-[200px] p-2"
+                                align="end"
                             >
-                                <Filter className="h-4 w-4" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                            className="w-[200px] p-2"
-                            align="end"
-                        >
-                            <nav className="space-y-1">
-                                {menuCategories.map((category) => (
-                                    <Button
-                                        key={category.id}
-                                        variant={selectedCategory === category.id ? "secondary" : "ghost"}
-                                        className="w-full justify-start h-9 font-normal text-sm"
-                                        onClick={() => handleCategorySelect(category.id)}
-                                    >
-                                        {category.name}
-                                    </Button>
-                                ))}
-                            </nav>
-                        </PopoverContent>
-                    </Popover>
+                                <nav className="space-y-1">
+                                    {menuCategories.map((category) => (
+                                        <Button
+                                            key={category.id}
+                                            variant={selectedCategory === category.id ? "secondary" : "ghost"}
+                                            className="w-full justify-start h-9 font-normal text-sm"
+                                            onClick={() => handleCategorySelect(category.id)}
+                                        >
+                                            {category.name}
+                                        </Button>
+                                    ))}
+                                </nav>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </div>
             </div>
             {/* Menu Categories and Items */}
@@ -212,8 +219,9 @@ export default function RestaurantMenu() {
                                 <div key={pageIndex} className="space-y-4">
                                     {page.data.map((item: MenuItem) => (
                                         <MenuItem
-                                            key={item.id}
+                                            key={item._id}
                                             item={item}
+                                            restaurant={restaurant.data}
                                         />
                                     ))}
                                 </div>
@@ -253,7 +261,7 @@ export default function RestaurantMenu() {
 }
 
 interface MenuItem {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     price: number;
@@ -262,9 +270,22 @@ interface MenuItem {
     isSpicy?: boolean;
     isBestseller?: boolean;
 }
+interface Restaurant {
+    _id: string;
+    name: string;
+    address: string;
+    phoneNumber: string;
+    cuisineType: string;
+    rating: number;
+    location?: string;
+}
 
-function MenuItem({ item }: { item: MenuItem }) {
-    const quantity = 0
+function MenuItem({ item, restaurant }: { item: MenuItem, restaurant: Restaurant }) {
+    const dispatch = useDispatch();
+    const cartItem = useSelector((state: RootState) =>
+        state.cart.items.find(i => i.item._id === item._id)
+    );
+    const quantity = cartItem?.quantity || 0;
     return (
         <Card className="group hover:shadow-lg transition-shadow duration-200">
             <div className="flex p-4 gap-4">
@@ -311,15 +332,15 @@ function MenuItem({ item }: { item: MenuItem }) {
                         {quantity > 0 ? (
                             <div className="flex items-center border rounded-lg overflow-hidden cursor-pointer">
                                 <Button
-                                    // onClick={onRemoveFromCart}
+                                    onClick={() => dispatch(removeFromCart(item._id))}
                                     variant="ghost"
                                     className="h-9 px-3 hover:bg-primary/10 cursor-pointer"
                                 >
                                     -
                                 </Button>
-                                <span className="w-10 text-center font-medium">{0}</span>
+                                <span className="w-10 text-center font-medium">{quantity}</span>
                                 <Button
-                                    // onClick={onAddToCart}
+                                    onClick={() => dispatch(addToCart({ item, restaurant }))}
                                     variant="ghost"
                                     className="h-9 px-3 hover:bg-primary/10 cursor-pointer"
                                 >
@@ -328,7 +349,7 @@ function MenuItem({ item }: { item: MenuItem }) {
                             </div>
                         ) : (
                             <Button
-                                // onClick={onAddToCart}
+                                onClick={() => dispatch(addToCart({ item, restaurant }))}
                                 variant="outline"
                                 className="hover:bg-primary hover:text-primary-foreground cursor-pointer"
                             >

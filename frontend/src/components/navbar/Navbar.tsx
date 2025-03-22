@@ -3,8 +3,10 @@ import { Toggle } from "@/components/ui/toggle";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, CookingPot } from "lucide-react";
+import { CookingPot, Menu } from "lucide-react";
 import { NavLink, Link } from "react-router";
+import { Cart } from "../cart/Cart";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface User {
     phoneNumber: string,
@@ -19,7 +21,6 @@ interface NavbarProps {
 export default function Navbar({ user }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
 
-    console.log(user)
 
     return (
         <nav className="flex items-center justify-between p-2 md:px-8 px-4 bg-background border-b border-b-border fixed top-0 w-full left-0 z-50">
@@ -30,13 +31,13 @@ export default function Navbar({ user }: NavbarProps) {
                 <div className="font-semibold">Dine-Express</div>
             </NavLink>
             <div className="hidden md:flex gap-6">
-                <Link to="/"><Button className="cursor-pointer" variant="ghost">Home</Button></Link>
                 <Link to="/restaurants"><Button className="cursor-pointer" variant="ghost">Restaurants</Button></Link>
                 <Link to="/grocery"><Button className="cursor-pointer" variant="ghost">Grocery</Button></Link>
                 <Link to="/bakes"><Button className="cursor-pointer" variant="ghost">Bakes</Button></Link>
             </div>
             <div className="flex items-center gap-4">
                 <Toggle />
+                <Cart />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Avatar className="cursor-pointer">
@@ -50,18 +51,24 @@ export default function Navbar({ user }: NavbarProps) {
                         <DropdownMenuItem>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="ghost" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-                    <Menu />
-                </Button>
+                <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                    <SheetTrigger asChild>
+                        <Button variant="ghost" className="md:hidden">
+                            <Menu className="size-6" />
+                        </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="w-64 p-6">
+                        <div className="flex justify-between items-center">
+                            <span className="text-xl font-semibold">Menu</span>
+                        </div>
+                        <div className="flex flex-col gap-4 mt-6">
+                            <Link to="/restaurants" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Restaurants</Link>
+                            <Link to="/grocery" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Grocery</Link>
+                            <Link to="/bakes" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Bakes</Link>
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </div>
-            {isOpen && (
-                <div className="absolute top-16 left-0 w-full bg-background shadow-md flex flex-col items-center gap-4 p-4 md:hidden">
-                    <Button variant="ghost">Home</Button>
-                    <Button variant="ghost">Services</Button>
-                    <Button variant="ghost">Pricing</Button>
-                    <Button variant="ghost">Contact</Button>
-                </div>
-            )}
         </nav>
     );
 }

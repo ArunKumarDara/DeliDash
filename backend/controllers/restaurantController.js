@@ -101,7 +101,7 @@ export const getRestaurants = async (req, res) => {
 
 export const getRestaurantById = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
+    const restaurantId = req.query.restaurantId;
 
     if (!restaurantId) {
       return res.status(400).json({

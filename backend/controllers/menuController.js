@@ -44,11 +44,39 @@ export const addMenuItem = async (req, res) => {
 
 export const getMenuItems = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
-    console.log(restaurantId);
+    const { restaurantId, search, category } = req.query;
     const { page = 1, limit = 10 } = req.query;
 
-    const menuItems = await MenuItem.find({ restaurantId })
+    let filter = { restaurantId };
+
+    // Search filter (case-insensitive)
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    if (category) {
+      switch (category) {
+        case "veg":
+          filter.isVeg = true;
+          break;
+        case "nonVeg":
+          filter.isVeg = false;
+          break;
+        case "bestSellers":
+          filter.isBestseller = true;
+          break;
+        case "spicy":
+          filter.isSpicy = true;
+          break;
+        case "recommended":
+          filter.recommended = true;
+          break;
+        default:
+          return res.status(400).json({ message: "Invalid category filter" });
+      }
+    }
+
+    const menuItems = await MenuItem.find(filter)
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
     const totalItems = await MenuItem.countDocuments({ restaurantId });

@@ -46,12 +46,11 @@ export const getMenuItems = async (req, res) => {
   try {
     const { restaurantId } = req.query;
     console.log(restaurantId);
-    const { page = 1, limit = 10 } = req.query; // Default: page 1, 10 items per page
+    const { page = 1, limit = 10 } = req.query;
 
     const menuItems = await MenuItem.find({ restaurantId })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
-    console.log(menuItems);
     const totalItems = await MenuItem.countDocuments({ restaurantId });
 
     return res.status(200).json({

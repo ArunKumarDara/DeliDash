@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CookingPot, Menu } from "lucide-react";
-import { NavLink, Link } from "react-router";
+import { NavLink, Link, useNavigate } from "react-router";
 import { Cart } from "../cart/Cart";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -20,7 +20,7 @@ interface NavbarProps {
 
 export default function Navbar({ user }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
-
+    const navigate = useNavigate()
 
     return (
         <nav className="flex items-center justify-between p-2 md:px-8 px-4 bg-background border-b border-b-border fixed top-0 w-full left-0 z-50">
@@ -46,7 +46,7 @@ export default function Navbar({ user }: NavbarProps) {
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
                         <DropdownMenuItem>Logout</DropdownMenuItem>
                     </DropdownMenuContent>

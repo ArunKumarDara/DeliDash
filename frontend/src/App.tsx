@@ -13,6 +13,8 @@ import Dashboard from "./pages/admin/Dashboard";
 import RestaurantMenu from "./pages/restaurants/Menu";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
+import Checkout from "./pages/checkout/Checkout";
+import Profile from "./pages/profile/Profile";
 
 
 const queryClient = new QueryClient()
@@ -33,6 +35,8 @@ function App() {
                 <Route index element={<Restaurants />} />
                 <Route path=":restaurantId" element={<RestaurantMenu />} /> {/* Dynamic route using 'name' */}
               </Route>
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="profile" element={<Profile />} />
               {/* <Route path="grocery" element={<Grocery />} /> */}
               {/* <Route path="bakes" element={<Bakes />} /> */}
             </Route>

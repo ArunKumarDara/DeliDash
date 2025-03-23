@@ -1,5 +1,6 @@
 import {
     Sheet,
+    SheetClose,
     SheetContent,
     SheetHeader,
     SheetTitle,
@@ -11,10 +12,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { removeFromCart, addToCart } from "@/store/cartSlice";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useNavigate } from "react-router";
 
 export function Cart() {
     const { items, totalAmount } = useSelector((state: RootState) => state.cart);
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     return (
         <Sheet>
@@ -93,7 +96,9 @@ export function Cart() {
                             <span>Total</span>
                             <span>₹{totalAmount}</span>
                         </div>
-                        <Button className="w-full mt-4">Checkout</Button>
+                        <SheetClose asChild>
+                            <Button className="w-full mt-4" onClick={() => navigate("/checkout")}>Checkout</Button>
+                        </SheetClose>
                     </div>
                 )}
             </SheetContent>

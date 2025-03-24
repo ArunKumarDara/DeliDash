@@ -9,6 +9,8 @@ import { RootState } from "@/store/store";
 import { useMutation } from "@tanstack/react-query";
 import { updateUser } from "@/api/user";
 import { loginUser } from "@/store/userSlice";
+import AddressForm from "@/components/address/AddressForm";
+
 
 interface Order {
     id: string;
@@ -48,6 +50,7 @@ export default function Profile() {
     const dispatch = useDispatch()
     const { user } = useSelector((state: RootState) => state.user)
     const [isEditing, setIsEditing] = useState(false);
+    const [openAddressForm, setOpenAddressForm] = useState(false);
     const [formData, setFormData] = useState({
         userName: user?.userName || "",
         phoneNumber: user?.phoneNumber || "",
@@ -154,10 +157,10 @@ export default function Profile() {
                                         <label className="text-sm font-medium">Full Name</label>
                                         <Input name="userName" value={formData.userName} onChange={handleChange} />
                                     </div>
-                                    {/* <div className="grid gap-1">
+                                    <div className="grid gap-1">
                                         <label className="text-sm font-medium">Email</label>
-                                        <Input defaultValue={userData.email} />
-                                    </div> */}
+                                        <Input defaultValue={user?.userName} />
+                                    </div>
                                     <div className="grid gap-1">
                                         <label className="text-sm font-medium">Phone</label>
                                         <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
@@ -262,11 +265,12 @@ export default function Profile() {
                         </Card>
 
                         <Card className="p-6 border-dashed">
-                            <Button variant="outline" className="w-full">
+                            <Button variant="outline" className="w-full" onClick={() => setOpenAddressForm(true)}>
                                 <MapPin className="h-4 w-4 mr-2" />
                                 Add New Address
                             </Button>
                         </Card>
+                        <AddressForm openAddressForm={openAddressForm} setOpenAddressForm={setOpenAddressForm} />
                     </div>
                 </TabsContent>
             </Tabs>

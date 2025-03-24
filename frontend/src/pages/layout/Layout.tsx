@@ -4,8 +4,13 @@ import { Outlet, Navigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getUser } from "../../api/user"
 import { LoaderCircle } from "lucide-react"
+import { useDispatch } from 'react-redux'
+import { loginUser } from '@/store/userSlice'
+import { useEffect } from 'react'
 
 const Layout = () => {
+
+    const dispatch = useDispatch()
 
     const { data, isPending, isError } = useQuery({
         queryKey: ["authUser"],
@@ -13,6 +18,12 @@ const Layout = () => {
         retry: false,
         staleTime: 1000 * 60 * 5
     })
+
+    useEffect(() => {
+        if (data?.success && data?.user) {
+            dispatch(loginUser(data.user)); // Dispatching user data to Redux store
+        }
+    }, [data, dispatch]);
 
     if (isPending) {
         return (

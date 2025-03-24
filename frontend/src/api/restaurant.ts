@@ -48,7 +48,6 @@ export const getRestaurants = async ({
 
 export const getRestaurantById = async (restaurantId: string) => {
   try {
-    console.log("rid", restaurantId);
     const response = await API.get(`/restaurants/getById`, {
       params: { restaurantId: restaurantId },
       withCredentials: true,

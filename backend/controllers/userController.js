@@ -105,3 +105,56 @@ export const getUserProfile = async (req, res) => {
       .json({ success: false, message: "Internal Server Error" });
   }
 };
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { userName, phoneNumber } = req.body;
+    const userId = req.user.id; // From auth middleware
+
+    // Find user and validate existence
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Validate phone number if being updated
+    if (phoneNumber && phoneNumber !== user.phoneNumber) {
+      const existingUser = await User.findOne({ phoneNumber });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Phone number already in use",
+        });
+      }
+    }
+
+    const updates = {
+      ...(userName && { userName }),
+      ...(phoneNumber && { phoneNumber }),
+      // ...(email && { email }),
+      // ...(address && { address }),
+    };
+
+    // Update user with new data
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).select("-mPin"); // Exclude mPin from response
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error(`Error in updateUserProfile: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

@@ -4,35 +4,50 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { MapPin, Clock, CreditCard } from "lucide-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { fetchAddresses } from "@/api/address";
+import { useState } from "react";
+import AddressForm from "@/components/address/AddressForm";
+import { Textarea } from "@/components/ui/textarea";
 
 interface SavedAddress {
-    id: string;
-    name: string;
+    _id: string;
+    type: string;
     address: string;
-    phone: string;
+    phoneNumber: string;
     isDefault: boolean;
+    receiverName: string
 }
-
-// Mock data for saved addresses
-const savedAddresses: SavedAddress[] = [
-    {
-        id: "1",
-        name: "Home",
-        address: "123 Main Street, Apartment 4B, City, State 12345",
-        phone: "+91 9876543210",
-        isDefault: true,
-    },
-    {
-        id: "2",
-        name: "Office",
-        address: "456 Work Avenue, Floor 3, City, State 12345",
-        phone: "+91 9876543211",
-        isDefault: false,
-    },
-];
 
 export default function Checkout() {
     const { items, totalAmount } = useSelector((state: RootState) => state.cart);
+    const [openAddressForm, setOpenAddressForm] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+    const [deliveryInstructions, setDeliveryInstructions] = useState("");
+    const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string | null>(null);
+    const [selectedPayment, setSelectedPayment] = useState("Cash on Delivery");
+
+
+    const {
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isLoading,
+        isError,
+        error,
+    } = useInfiniteQuery({
+        queryKey: ["addresses"],
+        queryFn: ({ pageParam = 1 }) => fetchAddresses(pageParam),
+        initialPageParam: 1,
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.totalPages > allPages.length ? allPages.length + 1 : undefined;
+        },
+        retry: false,
+        staleTime: 1000 * 60 * 5
+    });
+
+    const addresses = data?.pages.flatMap((page) => page.addresses) || [];
 
     return (
         <div className="container max-w-6xl mx-auto lg:w-6xl w-dvw md-p-0 p-4">
@@ -47,36 +62,67 @@ export default function Checkout() {
                             <MapPin className="h-5 w-5 text-primary" />
                             <h2 className="text-xl font-semibold">Delivery Address</h2>
                         </div>
-
-                        <div className="space-y-4">
-                            {savedAddresses.map((address) => (
-                                <div
-                                    key={address.id}
-                                    className="flex items-start gap-4 p-4 border rounded-lg hover:border-primary transition-colors"
-                                >
-                                    <Checkbox id={`address-${address.id}`} defaultChecked={address.isDefault} />
-                                    <div className="flex-1">
-                                        <label
-                                            htmlFor={`address-${address.id}`}
-                                            className="flex items-center gap-2 font-medium cursor-pointer"
-                                        >
-                                            {address.name}
-                                            {address.isDefault && (
-                                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                                                    Default
-                                                </span>
-                                            )}
-                                        </label>
-                                        <p className="text-sm text-muted-foreground mt-1">{address.address}</p>
-                                        <p className="text-sm text-muted-foreground mt-1">Phone: {address.phone}</p>
+                        {isLoading ? (
+                            <p>Loading addresses...</p>
+                        ) : isError ? (
+                            <p className="text-red-500">{error.message}</p>
+                        ) : (
+                            <div className="space-y-4">
+                                {addresses.map((address: SavedAddress) => (
+                                    <div
+                                        key={address._id}
+                                        className="flex items-start gap-4 p-4 border rounded-lg hover:border-primary transition-colors"
+                                    >
+                                        <Checkbox id={`address-${address._id}`}
+                                            checked={selectedAddressId === address._id}
+                                            onCheckedChange={() => setSelectedAddressId(address._id)}
+                                        />
+                                        <div className="flex-1">
+                                            <label
+                                                htmlFor={`address-${address._id}`}
+                                                className="flex items-center gap-2 font-medium cursor-pointer"
+                                            >
+                                                {address?.type}
+                                                {address.isDefault && (
+                                                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                                        Default
+                                                    </span>
+                                                )}
+                                            </label>
+                                            <h3 className="font-semibold">{address.receiverName}</h3>
+                                            <p className="text-sm text-muted-foreground mt-1">{address.address}</p>
+                                            <p className="text-sm text-muted-foreground mt-1">Phone: {address.phoneNumber}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
 
-                        <Button variant="outline" className="mt-4 w-full">
+                        {hasNextPage && (
+                            <Button
+                                variant="outline"
+                                className="mt-4 w-full"
+                                onClick={() => fetchNextPage()}
+                                disabled={isFetchingNextPage}
+                            >
+                                {isFetchingNextPage ? "Loading more..." : "Load More Addresses"}
+                            </Button>
+                        )}
+                        <Button className="w-full mt-6" onClick={() => setOpenAddressForm(true)}>
                             Add New Address
                         </Button>
+                    </Card>
+                    <Card className="p-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <MapPin className="h-5 w-5 text-primary" />
+                            <h2 className="text-xl font-semibold">Delivery Instructions</h2>
+                        </div>
+                        <Textarea
+                            placeholder="E.g., Leave at the doorstep, call upon arrival..."
+                            value={deliveryInstructions}
+                            onChange={(e) => setDeliveryInstructions(e.target.value)}
+                            className="w-full"
+                        />
                     </Card>
 
                     {/* Delivery Time */}
@@ -89,15 +135,16 @@ export default function Checkout() {
                             {["ASAP", "30-45 min", "45-60 min"].map((time) => (
                                 <Button
                                     key={time}
-                                    variant="outline"
+                                    variant={selectedDeliveryTime === time ? "default" : "outline"}
                                     className="w-full"
+                                    onClick={() => setSelectedDeliveryTime(time)}
                                 >
                                     {time}
                                 </Button>
                             ))}
                         </div>
                     </Card>
-
+                    <AddressForm openAddressForm={openAddressForm} setOpenAddressForm={setOpenAddressForm} />
                     {/* Payment Method */}
                     <Card className="p-6">
                         <div className="flex items-center gap-2 mb-4">
@@ -110,7 +157,11 @@ export default function Checkout() {
                                     key={method}
                                     className="flex items-center gap-4 p-4 border rounded-lg hover:border-primary transition-colors"
                                 >
-                                    <Checkbox id={`payment-${method}`} />
+                                    <Checkbox id={`payment-${method}`}
+                                        checked={selectedPayment === method}
+                                        disabled={method !== "Cash on Delivery"}
+                                        onCheckedChange={() => setSelectedPayment(method)}
+                                    />
                                     <label
                                         htmlFor={`payment-${method}`}
                                         className="font-medium cursor-pointer"

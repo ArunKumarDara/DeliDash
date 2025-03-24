@@ -11,6 +11,10 @@ interface LoginData {
   mPin: string;
 }
 
+interface UpdateUserData {
+  userName: string;
+  phoneNumber: string;
+}
 interface ApiError {
   response?: {
     data?: {
@@ -71,6 +75,25 @@ export const getUser = async () => {
       apiError.response?.data?.message ||
         apiError.message ||
         "Login failed. Please try again."
+    );
+  }
+};
+
+export const updateUser = async (data: UpdateUserData) => {
+  try {
+    const response = await API.post("/users/update", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Update failed. Please try again."
     );
   }
 };

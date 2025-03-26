@@ -81,7 +81,10 @@ export const getRestaurants = async (req, res) => {
       };
     }
 
-    const restaurants = await Restaurant.find(query).skip(skip).limit(limit);
+    const restaurants = await Restaurant.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
     const totalRestaurants = await Restaurant.countDocuments(query);
 
@@ -125,6 +128,36 @@ export const getRestaurantById = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error fetching restaurant:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const deleteRestaurant = async (req, res) => {
+  try {
+    const restaurantId = req.query.restaurantId;
+
+    if (!restaurantId) {
+      return res.status(400).json({
+        success: false,
+        message: "Restaurant ID is required",
+      });
+    }
+
+    const restaurant = await Restaurant.findByIdAndDelete(restaurantId);
+
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: "Restaurant not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Restaurant deleted successfully",
+    });
+  } catch (error) {
+    console.error("❌ Error deleting restaurant:", error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };

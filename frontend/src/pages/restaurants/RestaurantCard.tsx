@@ -15,8 +15,9 @@ interface Restaurant {
     address: string;
     phoneNumber: string;
     cuisineType: string;
-    rating: number;
+    rating: number[];
     location?: string;
+    priceRange: number
 }
 
 const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisineType, rating }) => {
@@ -41,7 +42,7 @@ const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisi
                             {cuisineType}
                         </CardDescription>
                     </div>
-                    <Badge variant={rating >= 4.0 ? "default" : "secondary"}>
+                    <Badge variant={rating[1] >= 4.0 ? "default" : "secondary"}>
                         ⭐ {rating}
                     </Badge>
                 </div>

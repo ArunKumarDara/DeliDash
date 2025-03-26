@@ -25,8 +25,9 @@ interface Restaurant {
     address: string;
     phoneNumber: string;
     cuisineType: string;
-    rating: number;
+    rating: number[];
     location?: string;
+    priceRange: number
 }
 
 export default function Restaurants() {

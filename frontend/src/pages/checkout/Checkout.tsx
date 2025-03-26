@@ -4,11 +4,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { MapPin, Clock, CreditCard } from "lucide-react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { fetchAddresses } from "@/api/address";
 import { useState } from "react";
 import AddressForm from "@/components/address/AddressForm";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { placeOrder } from "@/api/order";
 
 interface SavedAddress {
     _id: string;
@@ -19,6 +21,26 @@ interface SavedAddress {
     receiverName: string
 }
 
+interface CartItem {
+    item: {
+        _id: string;
+        name: string;
+        price: number;
+    };
+    quantity: number;
+}
+
+// Define OrderPayload
+interface OrderPayload {
+    addressId: string;
+    deliveryTime: string;
+    deliveryInstructions: string;
+    menuItems: CartItem[];
+    totalAmount: number;
+    paymentMethod: string;
+}
+
+
 export default function Checkout() {
     const { items, totalAmount } = useSelector((state: RootState) => state.cart);
     const [openAddressForm, setOpenAddressForm] = useState(false);
@@ -27,14 +49,13 @@ export default function Checkout() {
     const [selectedDeliveryTime, setSelectedDeliveryTime] = useState<string | null>(null);
     const [selectedPayment, setSelectedPayment] = useState("Cash on Delivery");
 
-
     const {
         data,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
         isLoading,
-        isError,
+        isError: isAddressError,
         error,
     } = useInfiniteQuery({
         queryKey: ["addresses"],
@@ -48,6 +69,52 @@ export default function Checkout() {
     });
 
     const addresses = data?.pages.flatMap((page) => page.addresses) || [];
+
+    const { mutate, isPending: isOrderPending } = useMutation<OrderPayload, Error, OrderPayload>({
+        mutationKey: ["orders"],
+        mutationFn: placeOrder,
+        onSuccess: (data) => {
+            toast.success("Order placed successfully!");
+            // Optionally, navigate to order confirmation page
+            console.log(data)
+        },
+        onError: (error) => {
+            toast.error("Uh oh! Something went wrong.", {
+                description: error.message || "Failed to place order. Please try again.",
+            });
+        },
+    });
+
+    const handlePlaceOrder = () => {
+        if (items.length === 0) {
+            toast.error("Uh oh! Something went wrong.", {
+                description: "Your cart is empty. Please add items before placing an order.",
+            });
+            return;
+        }
+        if (!selectedAddressId) {
+            toast.error("Uh oh! Something went wrong.", {
+                description: "Please select a delivery address.",
+            });
+            return;
+        }
+        if (!selectedDeliveryTime) {
+            toast.error("Uh oh! Something went wrong.", {
+                description: "Please select a delivery time.",
+            });
+            return;
+        }
+
+        mutate({
+            addressId: selectedAddressId,
+            deliveryTime: selectedDeliveryTime,
+            deliveryInstructions,
+            menuItems: items,
+            totalAmount: totalAmount + 40, // Including delivery fee
+            paymentMethod: selectedPayment,
+        });
+    };
+
 
     return (
         <div className="container max-w-6xl mx-auto lg:w-6xl w-dvw md-p-0 p-4">
@@ -64,7 +131,7 @@ export default function Checkout() {
                         </div>
                         {isLoading ? (
                             <p>Loading addresses...</p>
-                        ) : isError ? (
+                        ) : isAddressError ? (
                             <p className="text-red-500">{error.message}</p>
                         ) : (
                             <div className="space-y-4">
@@ -184,10 +251,13 @@ export default function Checkout() {
                                     key={item.item._id}
                                     className="flex justify-between items-start py-2 border-b"
                                 >
-                                    <div className="flex gap-2">
-                                        <div className="font-medium">{item.quantity}x</div>
-                                        <div>
+                                    <div className="flex gap-2 flex-col items-start">
+                                        <div className="flex justify-start items-center gap-2">
+                                            <div className="font-medium">{item.quantity}x</div>
                                             <p className="font-medium">{item.item.name}</p>
+                                        </div>
+                                        <div className="flex justify-start items-center gap-2">
+                                            <p className="text-sm text-muted-foreground">{item.restaurant.name} -</p>
                                             <p className="text-sm text-muted-foreground">
                                                 ₹{item.item.price} each
                                             </p>
@@ -215,8 +285,16 @@ export default function Checkout() {
                             </div>
                         </div>
 
-                        <Button className="w-full mt-6" size="lg">
-                            Place Order • ₹{totalAmount + 40}
+                        <Button className="w-full mt-6" size="lg" onClick={handlePlaceOrder}>
+                            {isOrderPending ? (
+                                <span className="flex gap-1 items-center">
+                                    <span className="dot w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.2s]"></span>
+                                    <span className="dot w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.1s]"></span>
+                                    <span className="dot w-2 h-2 bg-white rounded-full animate-bounce"></span>
+                                </span>
+                            ) : (
+                                `Place Order • ₹${totalAmount + 40}`
+                            )}
                         </Button>
                     </Card>
                 </div>

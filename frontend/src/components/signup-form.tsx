@@ -52,7 +52,6 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
     })
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values)
         mutate(values)
     };
 

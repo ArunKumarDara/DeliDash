@@ -34,22 +34,24 @@ const Layout = () => {
     }
 
     if (data?.user?.role === "admin") {
-        return <Navigate to="/admin/dashboard" replace />;
+        return <Navigate to="/admin" replace />;
     }
 
     if (isError || !data?.success) {
         return <Navigate to="/login" replace />;
     }
 
+    const isAdmin = data?.user?.role === "admin";
+
     return (
         <div className='flex flex-col min-h-screen'>
-            <Navbar user={data.user} />
+            {!isAdmin && <Navbar user={data.user} />}
             <main className="flex-1 flex items-center justify-center p-6 mt-16">
                 <div className="text-center">
                     <Outlet />
                 </div>
             </main>
-            <Footer />
+            {!isAdmin && <Footer />}
         </div>
     )
 }

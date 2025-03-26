@@ -17,6 +17,10 @@ const restaurantSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  status: {
+    type: Boolean,
+    default: true,
+  },
   cuisineType: {
     type: String,
     enum: ["Indian", "Chinese", "Fast Food", "Other"],

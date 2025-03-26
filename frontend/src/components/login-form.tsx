@@ -40,7 +40,7 @@ export function LoginForm({
   const { mutate, isPending } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      toast("Login successful! 🎉");
+      toast.success("Login successful! 🎉");
       navigate("/")
       console.log("User logged in:", data);
     },

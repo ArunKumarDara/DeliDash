@@ -9,12 +9,15 @@ import { Toaster } from "sonner";
 import Layout from "./pages/layout/Layout";
 import Home from "./pages/home/Home";
 import Restaurants from "./pages/restaurants/Restaurants";
-import Dashboard from "./pages/admin/Dashboard";
 import RestaurantMenu from "./pages/restaurants/Menu";
 import { store } from "./store/store";
 import { Provider } from "react-redux";
 import Checkout from "./pages/checkout/Checkout";
 import Profile from "./pages/profile/Profile";
+// import AdminDashboard from "./pages/admin/dashboard/Page";
+// import AdminDashboard from "./admin/AdminDashboard";
+import Dashboard from "./admin/dashBoard/Dashboard";
+// import AdminRestaurants from "./admin/restaurants/Restaurants";
 
 
 const queryClient = new QueryClient()
@@ -37,10 +40,14 @@ function App() {
               </Route>
               <Route path="checkout" element={<Checkout />} />
               <Route path="profile" element={<Profile />} />
-              {/* <Route path="grocery" element={<Grocery />} /> */}
-              {/* <Route path="bakes" element={<Bakes />} /> */}
+              <Route path="admin" element={<Dashboard />} />
+
             </Route>
-            <Route path="/admin/dashboard" element={<Dashboard />} />
+            /* <Route path="/admin" element={<Dashboard />} /> */
+            // <Route path="admin">
+            //   <Route index element={<Dashboard />} />
+            //   {/* <Route path="restaurants" element={<AdminRestaurants />} /> */}
+            // </Route>
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

@@ -41,3 +41,29 @@ export const getMenuItems = async ({
     );
   }
 };
+
+export const addMenuItem = async (menuItemData: {
+  restaurantId: string;
+  name: string;
+  price: number;
+  isVeg: boolean;
+  available: boolean;
+  isBestseller: boolean;
+  isSpicy: boolean;
+  description: string;
+}) => {
+  try {
+    const response = await API.post("/menu/add", menuItemData, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to add menu item. Please try again."
+    );
+  }
+};

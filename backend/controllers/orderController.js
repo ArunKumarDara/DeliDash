@@ -2,6 +2,7 @@ import Order from "../models/orderModel.js";
 
 export const addOrder = async (req, res) => {
   try {
+    const userId = req.user.id;
     const {
       addressId,
       deliveryTime,
@@ -29,6 +30,7 @@ export const addOrder = async (req, res) => {
       menuItems,
       totalAmount,
       paymentMethod,
+      userId,
     });
     let savedOrder = await newOrder.save();
 
@@ -63,7 +65,6 @@ export const getOrders = async (req, res) => {
 export const getOrderById = async (req, res) => {
   try {
     const orderId = req.query.orderId;
-    console.log(orderId);
 
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
@@ -88,21 +89,35 @@ export const getOrderById = async (req, res) => {
 export const getOrdersByUserId = async (req, res) => {
   try {
     const userId = req.user.id;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    console.log("uid", userId);
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
     const orders = await Order.find({ userId })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
       .populate("menuItems.item")
       .populate("menuItems.restaurant")
       .populate("addressId");
+
+    console.log(orders);
 
     if (orders.length === 0) {
       return res.status(404).json({ message: "No orders found for this user" });
     }
 
-    return res.status(200).json({ orders });
+    return res.status(200).json({
+      success: true,
+      count: orders.length,
+      page,
+      data: orders,
+    });
   } catch (error) {
     console.error("Error fetching user orders:", error);
     return res.status(500).json({ message: "Internal server error" });

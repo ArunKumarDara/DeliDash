@@ -335,13 +335,9 @@ export default function OrderConfirmation() {
 
                     <div className="mt-6 space-y-3">
                         <div className="flex justify-between">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span>₹{order.totalAmount}</span>
-                        </div>
-                        {/* <div className="flex justify-between">
-                            <span className="text-muted-foreground">Delivery Fee</span>
+                            <span className="text-muted-foreground text-sm">Delivery Charges</span>
                             <span>₹40</span>
-                        </div> */}
+                        </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Taxes & Charges</span>
                             <span>₹{Math.round(order.totalAmount * 0.05)}</span>

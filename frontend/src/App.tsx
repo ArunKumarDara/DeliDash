@@ -17,6 +17,7 @@ import Profile from "./pages/profile/Profile";
 // import AdminDashboard from "./pages/admin/dashboard/Page";
 // import AdminDashboard from "./admin/AdminDashboard";
 import Dashboard from "./admin/dashBoard/Dashboard";
+import OrderConfirmation from "./pages/orders/OrderConfirmation";
 // import AdminRestaurants from "./admin/restaurants/Restaurants";
 
 
@@ -41,13 +42,13 @@ function App() {
               <Route path="checkout" element={<Checkout />} />
               <Route path="profile" element={<Profile />} />
               <Route path="admin" element={<Dashboard />} />
-
+              <Route path="order-confirmation/:orderId" element={<OrderConfirmation />} />
             </Route>
-            /* <Route path="/admin" element={<Dashboard />} /> */
-            // <Route path="admin">
-            //   <Route index element={<Dashboard />} />
-            //   {/* <Route path="restaurants" element={<AdminRestaurants />} /> */}
-            // </Route>
+            <Route path="/admin" element={<Dashboard />} />
+            <Route path="admin">
+              <Route index element={<Dashboard />} />
+              {/* <Route path="restaurants" element={<AdminRestaurants />} /> */}
+            </Route>
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

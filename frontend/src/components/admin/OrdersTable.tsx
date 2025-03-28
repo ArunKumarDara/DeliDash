@@ -224,9 +224,9 @@ export default function OrdersTable() {
                                     </div>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="font-medium">{order.addressId.receiverName}</div>
+                                    <div className="font-medium">{order.addressId?.receiverName}</div>
                                     <div className="text-xs text-muted-foreground">
-                                        {order.addressId.phoneNumber}
+                                        {order.addressId?.phoneNumber}
                                     </div>
                                 </TableCell>
                                 <TableCell>

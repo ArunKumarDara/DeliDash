@@ -1,4 +1,5 @@
 import Address from "../models/addressModel.js";
+import mongoose from "mongoose";
 
 export const addAddress = async (req, res) => {
   try {
@@ -58,7 +59,9 @@ export const getUserAddresses = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      addresses,
+      count: addresses.length,
+      page,
+      data: addresses,
       currentPage: parseInt(page),
       totalPages: Math.ceil(totalItems / limit),
     });
@@ -72,7 +75,7 @@ export const getUserAddresses = async (req, res) => {
 
 export const deleteAddress = async (req, res) => {
   try {
-    const { addressId } = req.params;
+    const addressId = req.query.addressId;
     const userId = req.user.id;
 
     const existingAddress = await Address.findOne({ _id: addressId, userId });
@@ -130,5 +133,72 @@ export const updateAddress = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const setDefaultAddress = async (req, res) => {
+  try {
+    console.log(req);
+    const { addressId } = req.params;
+    console.log(addressId);
+    const userId = req.user.id;
+
+    // First verify the address exists and belongs to the user
+    const address = await Address.findOne({ _id: addressId, userId });
+
+    if (!address) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found or doesn't belong to user",
+      });
+    }
+
+    // If the address is already default, no need to proceed
+    if (address.isDefault) {
+      return res.status(200).json({
+        success: true,
+        message: "Address is already set as default",
+        address,
+      });
+    }
+
+    // Start a transaction to ensure atomicity
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // 1. Set all other addresses to non-default
+      await Address.updateMany(
+        { userId, _id: { $ne: addressId } },
+        { $set: { isDefault: false } },
+        { session }
+      );
+
+      // 2. Set the selected address as default
+      const updatedAddress = await Address.findByIdAndUpdate(
+        addressId,
+        { $set: { isDefault: true } },
+        { new: true, session }
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return res.status(200).json({
+        success: true,
+        message: "Address set as default successfully",
+        address: updatedAddress,
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  } catch (error) {
+    console.error(`Error in setDefaultAddress: ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };

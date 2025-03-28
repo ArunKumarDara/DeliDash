@@ -16,6 +16,22 @@ interface ApiError {
   message?: string;
 }
 
+interface SetDefaultAddressResponse {
+  success: boolean;
+  message: string;
+  address: {
+    _id: string;
+    isDefault: boolean;
+    // other address fields...
+  };
+}
+
+/**
+ * Set an address as default and mark all others as non-default
+ * @param addressId The ID of the address to set as default
+ * @returns Promise with the updated address
+ */
+
 // Fetch all addresses
 export const fetchAddresses = async (pageParam = 1) => {
   try {
@@ -57,7 +73,7 @@ export const addAddress = async (data: AddressData) => {
 // Update an existing address
 export const updateAddress = async (id: string, data: AddressData) => {
   try {
-    const response = await API.put(`/users/addresses/update/${id}`, data, {
+    const response = await API.put("/address/updateStatus", data, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -75,9 +91,11 @@ export const updateAddress = async (id: string, data: AddressData) => {
 };
 
 // Delete an address
-export const deleteAddress = async (id: string) => {
+export const deleteAddress = async (addressId: string) => {
   try {
-    const response = await API.delete(`/users/addresses/delete/${id}`, {
+    console.log(addressId);
+    const response = await API.delete("/address/delete", {
+      params: { addressId: addressId },
       withCredentials: true,
     });
     return response.data;
@@ -87,6 +105,29 @@ export const deleteAddress = async (id: string) => {
       apiError.response?.data?.message ||
         apiError.message ||
         "Failed to delete address. Please try again."
+    );
+  }
+};
+
+// Add this to your API calls file (e.g., addressApi.ts)
+export const setDefaultAddress = async (
+  addressId: string
+): Promise<SetDefaultAddressResponse> => {
+  try {
+    const response = await API.put(
+      `/address/setDefault/${addressId}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to set default address. Please try again."
     );
   }
 };

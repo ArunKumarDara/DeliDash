@@ -7,6 +7,7 @@ import userRouter from "./router/userRouter.js";
 import restaurantRouter from "./router/restaurantRouter.js";
 import menuRouter from "./router/menu.js";
 import addressRouter from "./router/addressRouter.js";
+import orderRouter from "./router/orderRouter.js";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ const port = process.env.PORT || 5000;
   app.use("/api/v1/restaurants", restaurantRouter);
   app.use("/api/v1/menu", menuRouter);
   app.use("/api/v1/address", addressRouter);
+  app.use("/api/v1/orders", orderRouter);
 
   app.get("/", (req, res) => {
     res.send("Hello, world!");

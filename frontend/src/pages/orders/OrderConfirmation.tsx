@@ -132,6 +132,8 @@ export default function OrderConfirmation() {
         restaurantsMap.get(item.restaurant._id)?.push(item);
     });
 
+    const deliveryFee = 20
+
     return (
         <div className="container mx-auto py-8 max-w-4xl">
             {/* Confirmation Header */}
@@ -333,7 +335,7 @@ export default function OrderConfirmation() {
                     <div className="mt-6 space-y-3">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground text-sm">Delivery Charges</span>
-                            <span>₹40</span>
+                            <span>₹{deliveryFee}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Taxes & Charges</span>
@@ -341,7 +343,7 @@ export default function OrderConfirmation() {
                         </div>
                         <div className="flex justify-between font-bold text-lg pt-3 mt-3 border-t">
                             <span>Total</span>
-                            <span>₹{order.totalAmount + Math.round(order.totalAmount * 0.05)}</span>
+                            <span>₹{order.totalAmount}</span>
                         </div>
                     </div>
                 </Card>
@@ -355,9 +357,9 @@ export default function OrderConfirmation() {
                                 <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                                 <div>
                                     <h3 className="font-medium">Delivery Address</h3>
-                                    <p className="text-muted-foreground">{order.addressId.address}</p>
+                                    <p className="text-muted-foreground">{order.addressId?.address}</p>
                                     <p className="text-muted-foreground text-sm mt-1">
-                                        Phone: {order.addressId.phoneNumber}
+                                        Phone: {order.addressId?.phoneNumber}
                                     </p>
                                 </div>
                             </div>

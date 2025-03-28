@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { MapPin, Clock, CreditCard } from "lucide-react";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAddresses } from "@/api/address";
 import { useState } from "react";
 import AddressForm from "@/components/address/AddressForm";
@@ -46,6 +46,7 @@ interface OrderPayload {
 export default function Checkout() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const { items, totalAmount } = useSelector((state: RootState) => state.cart);
     const [openAddressForm, setOpenAddressForm] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
@@ -78,6 +79,7 @@ export default function Checkout() {
         mutationKey: ["orders"],
         mutationFn: placeOrder,
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["orders"] });
             toast.success("Order placed successfully!");
             dispatch(clearCart())
             console.log(data)

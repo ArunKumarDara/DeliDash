@@ -90,9 +90,14 @@ export const getOrderById = async (orderId: string): Promise<OrderResponse> => {
   }
 };
 
-export const getOrders = async (): Promise<OrderResponse[]> => {
+export const getOrders = async ({
+  pageParam = 1,
+}: {
+  pageParam: number;
+}): Promise<OrderResponse[]> => {
   try {
     const response = await API.get<OrderResponse[]>("/orders/get", {
+      params: { pageParam: pageParam, limit: 5 },
       withCredentials: true,
     });
 
@@ -125,6 +130,33 @@ export const getOrdersByUserId = async ({
       apiError.response?.data?.message ||
         apiError.message ||
         "Failed to fetch user orders. Please try again."
+    );
+  }
+};
+
+// Add this to your existing interfaces
+interface UpdateOrderStatusResponse extends OrderResponse {
+  status: string;
+}
+
+export const updateOrderStatus = async (
+  orderId: string,
+  status: string
+): Promise<UpdateOrderStatusResponse> => {
+  try {
+    const response = await API.post<UpdateOrderStatusResponse>(
+      "/orders/updateStatus",
+      { orderId, status },
+      { withCredentials: true }
+    );
+
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to update order status. Please try again."
     );
   }
 };

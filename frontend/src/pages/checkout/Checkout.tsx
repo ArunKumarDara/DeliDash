@@ -73,7 +73,7 @@ export default function Checkout() {
         staleTime: 1000 * 60 * 5
     });
 
-    const addresses = data?.pages.flatMap((page) => page.addresses) || [];
+    const addresses = data?.pages.flatMap((page) => page.data) || [];
 
     const { mutate, isPending: isOrderPending } = useMutation<OrderPayload, Error, OrderPayload>({
         mutationKey: ["orders"],
@@ -118,10 +118,15 @@ export default function Checkout() {
             deliveryTime: selectedDeliveryTime,
             deliveryInstructions,
             menuItems: items,
-            totalAmount: totalAmount + 40, // Including delivery fee
+            totalAmount: total, // Including delivery fee
             paymentMethod: selectedPayment,
         });
     };
+
+    const deliveryFee = 20
+    const taxRate = 0.05; // 5%
+    const taxAndPlatformFee = Math.round(totalAmount * taxRate);// Fixed delivery fee
+    const total = totalAmount + deliveryFee + taxAndPlatformFee;
 
 
     return (
@@ -284,11 +289,15 @@ export default function Checkout() {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">Delivery Fee</span>
-                                    <span>₹40</span>
+                                    <span>₹{deliveryFee}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-muted-foreground">Tax & Platform Fee (5%)</span>
+                                    <span>₹{taxAndPlatformFee}</span>
                                 </div>
                                 <div className="flex justify-between text-lg font-semibold pt-2 border-t">
                                     <span>Total</span>
-                                    <span>₹{totalAmount + 40}</span>
+                                    <span>₹{total}</span>
                                 </div>
                             </div>
                         </div>
@@ -301,7 +310,7 @@ export default function Checkout() {
                                     <span className="dot w-2 h-2 bg-white rounded-full animate-bounce"></span>
                                 </span>
                             ) : (
-                                `Place Order • ₹${totalAmount + 40}`
+                                `Place Order • ₹${total}`
                             )}
                         </Button>
                     </Card>

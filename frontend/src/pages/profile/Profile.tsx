@@ -130,8 +130,6 @@ export default function Profile() {
     const isEmpty = data?.pages?.every(page => page.data.length === 0);
     const orders = data?.pages?.flatMap((page) => page.data) || [];
 
-    console.log(orders)
-
     return (
         <div className="container py-8 max-w-4xl mx-auto lg:w-4xl w-dvw md-p-0 p-4">
             <h1 className="text-3xl font-bold mb-8">My Profile</h1>

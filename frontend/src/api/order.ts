@@ -89,3 +89,42 @@ export const getOrderById = async (orderId: string): Promise<OrderResponse> => {
     );
   }
 };
+
+export const getOrders = async (): Promise<OrderResponse[]> => {
+  try {
+    const response = await API.get<OrderResponse[]>("/orders/get", {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to fetch orders. Please try again."
+    );
+  }
+};
+
+export const getOrdersByUserId = async ({
+  pageParam = 1,
+}: {
+  pageParam: number;
+}): Promise<OrderResponse[]> => {
+  try {
+    const response = await API.get<OrderResponse[]>("/orders/getByUserId", {
+      params: { pageParam: pageParam, limit: 10 },
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Failed to fetch user orders. Please try again."
+    );
+  }
+};

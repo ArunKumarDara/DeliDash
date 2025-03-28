@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { MapPin, Clock, CreditCard } from "lucide-react";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
@@ -11,6 +11,8 @@ import AddressForm from "@/components/address/AddressForm";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { placeOrder } from "@/api/order";
+import { useNavigate } from "react-router";
+import { clearCart } from "@/store/cartSlice";
 
 interface SavedAddress {
     _id: string;
@@ -42,6 +44,8 @@ interface OrderPayload {
 
 
 export default function Checkout() {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { items, totalAmount } = useSelector((state: RootState) => state.cart);
     const [openAddressForm, setOpenAddressForm] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
@@ -75,8 +79,10 @@ export default function Checkout() {
         mutationFn: placeOrder,
         onSuccess: (data) => {
             toast.success("Order placed successfully!");
-            // Optionally, navigate to order confirmation page
+            dispatch(clearCart())
             console.log(data)
+            // Optionally, navigate to order confirmation page
+            navigate(`/order-confirmation/${data?.order?._id}`)
         },
         onError: (error) => {
             toast.error("Uh oh! Something went wrong.", {

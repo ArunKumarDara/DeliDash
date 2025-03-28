@@ -96,16 +96,13 @@ export default function OrderConfirmation() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto py-8 max-w-4xl">
-                <div className="space-y-6">
-                    <Skeleton className="h-12 w-64 mx-auto" />
-                    <div className="grid gap-6">
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-32 w-full" />
-                    </div>
-                </div>
-            </div>
+            <div className="container mx-auto py-8 max-w-4xl h-full">
+                <span className="flex gap-1 items-center" >
+                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.2s]"></span>
+                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.1s]"></span>
+                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce"></span>
+                </span >
+            </div >
         );
     }
 

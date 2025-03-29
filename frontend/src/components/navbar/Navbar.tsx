@@ -7,6 +7,21 @@ import { CookingPot, Menu } from "lucide-react";
 import { NavLink, Link, useNavigate } from "react-router";
 import { Cart } from "../cart/Cart";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useMutation } from "@tanstack/react-query";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { logout } from "@/api/user";
+import { useDispatch } from 'react-redux'
+import { logoutUser } from '@/store/userSlice'
+import { toast } from "sonner";
 
 interface User {
     phoneNumber: string,
@@ -20,7 +35,43 @@ interface NavbarProps {
 
 export default function Navbar({ user }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const dispatch = useDispatch()
     const navigate = useNavigate()
+
+    const logoutMutation = useMutation({
+        mutationFn: logout,
+        onMutate: () => {
+            // Show loading toast
+            toast.loading("Logging out...", {
+                id: "logout"
+            });
+        },
+        onSuccess: () => {
+            dispatch(logoutUser())
+            // Update the loading toast to success
+            toast.success("Logged out successfully", {
+                id: "logout"
+            });
+            navigate("/login");
+        },
+        onError: (error) => {
+            console.error("Logout failed:", error);
+            // Update the loading toast to error
+            toast.error("Failed to logout. Please try again.", {
+                id: "logout"
+            });
+        },
+    });
+
+    const handleLogout = () => {
+        setShowLogoutDialog(true);
+    };
+
+    const confirmLogout = () => {
+        logoutMutation.mutate();
+        setShowLogoutDialog(false);
+    };
 
     return (
         <nav className="flex items-center justify-between p-2 md:px-8 px-4 bg-background border-b border-b-border fixed top-0 w-full left-0 z-50">
@@ -48,7 +99,7 @@ export default function Navbar({ user }: NavbarProps) {
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
                         <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem>Logout</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -69,6 +120,27 @@ export default function Navbar({ user }: NavbarProps) {
                     </SheetContent>
                 </Sheet>
             </div>
+            <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You'll need to log in again to access your account.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={logoutMutation.isPending}>
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmLogout}
+                            disabled={logoutMutation.isPending}
+                        >
+                            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </nav>
     );
 }

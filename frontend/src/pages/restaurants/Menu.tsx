@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { useState, useCallback } from "react";
 import { debounce } from "lodash"
+import { CutlerySpinner } from "@/components/spinner/CutlerySpinner";
+import FoodSpinner from "@/components/spinner/FoodSpinner";
 
 
 interface MenuItem {
@@ -164,7 +166,7 @@ export default function RestaurantMenu() {
                 {/* Menu Items */}
                 <div className="space-y-8">
                     {isLoading ? (
-                        <div className="lg:w-3xl md:w-2xs">Loading menu items...</div>
+                        <div className="lg:w-3xl md:w-2xs"><FoodSpinner /></div>
                     ) : isMenuEmpty ? (
                         <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
                             <div className="text-6xl">🍽️</div>

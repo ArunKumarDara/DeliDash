@@ -13,6 +13,9 @@ import { toast } from "sonner";
 import { placeOrder } from "@/api/order";
 import { useNavigate } from "react-router";
 import { clearCart } from "@/store/cartSlice";
+import { CutlerySpinner } from "@/components/spinner/CutlerySpinner";
+import PulseLoader from "@/components/spinner/PulseLoader";
+import { FoodIconSpinner } from "@/components/spinner/FoodIconSpinner";
 
 interface SavedAddress {
     _id: string;
@@ -143,7 +146,7 @@ export default function Checkout() {
                             <h2 className="text-xl font-semibold">Delivery Address</h2>
                         </div>
                         {isLoading ? (
-                            <p>Loading addresses...</p>
+                            <CutlerySpinner />
                         ) : isAddressError ? (
                             <p className="text-red-500">{error.message}</p>
                         ) : (

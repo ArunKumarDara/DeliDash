@@ -16,6 +16,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import FoodSpinner from "@/components/spinner/FoodSpinner";
 
 interface Address {
     _id: string;
@@ -99,15 +100,7 @@ export function AddressesTab({
             <div className="flex flex-col gap-4">
                 {[1, 2].map((i) => (
                     <Card key={i} className="p-6">
-                        <div className="animate-pulse flex flex-col gap-4">
-                            <div className="h-6 w-32 bg-gray-200 rounded"></div>
-                            <div className="h-4 w-full bg-gray-200 rounded"></div>
-                            <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
-                            <div className="flex gap-2 mt-4">
-                                <div className="h-8 w-24 bg-gray-200 rounded"></div>
-                                <div className="h-8 w-20 bg-gray-200 rounded"></div>
-                            </div>
-                        </div>
+                        <FoodSpinner />
                     </Card>
                 ))}
             </div>

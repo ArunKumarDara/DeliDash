@@ -18,6 +18,9 @@ import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant"
+import PulseLoader from "@/components/spinner/PulseLoader"
+import { CutlerySpinner } from "@/components/spinner/CutlerySpinner"
+import FoodSpinner from "@/components/spinner/FoodSpinner"
 
 interface Restaurant {
     _id: string;
@@ -159,7 +162,7 @@ export default function Restaurants() {
                         </div>
                     )}
 
-                    {isLoading ? <div className="lg:w-3xl md:w-2xs">loading....</div> :
+                    {isLoading ? <div className="lg:w-3xl md:w-2xs flex justify-center items-center"><FoodSpinner /></div> :
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {data?.pages.map((page) =>
                                 page.data.map((restaurant: Restaurant) => (

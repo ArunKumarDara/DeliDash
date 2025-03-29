@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import DeliverySpinner from "@/components/spinner/DeliverySpinner";
 
 interface MenuItem {
     _id: string;
@@ -97,11 +98,7 @@ export default function OrderConfirmation() {
     if (isLoading) {
         return (
             <div className="container mx-auto py-8 max-w-4xl h-full">
-                <span className="flex gap-1 items-center" >
-                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.2s]"></span>
-                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce [animation-delay:-0.1s]"></span>
-                    <span className="dot w-2 h-2 bg-black rounded-full animate-bounce"></span>
-                </span >
+                <DeliverySpinner />
             </div >
         );
     }

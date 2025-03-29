@@ -5,11 +5,11 @@
   "license": "ISC",
   "author": "arun kumar dara",
   "type": "module",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

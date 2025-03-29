@@ -132,6 +132,9 @@ export default function OrderConfirmation() {
         restaurantsMap.get(item.restaurant._id)?.push(item);
     });
 
+    const amount = order.menuItems.reduce((sum, { item: { price }, quantity }) =>
+        sum + (price * quantity), 0);
+
     const deliveryFee = 20
 
     return (
@@ -338,8 +341,8 @@ export default function OrderConfirmation() {
                             <span>₹{deliveryFee}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-muted-foreground">Taxes & Charges</span>
-                            <span>₹{Math.round(order.totalAmount * 0.05)}</span>
+                            <span className="text-muted-foreground">Taxes & Charges + Delivery Fee</span>
+                            <span>₹{Math.round(amount * 0.05)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg pt-3 mt-3 border-t">
                             <span>Total</span>

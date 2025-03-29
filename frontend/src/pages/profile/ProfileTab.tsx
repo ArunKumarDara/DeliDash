@@ -70,10 +70,6 @@ export function ProfileTab({ user }: ProfileTabProps) {
 
                     <div className="space-y-4 mt-6">
                         <div className="flex items-center gap-3 text-muted-foreground">
-                            <Mail className="h-4 w-4" />
-                            <span>{user?.phoneNumber}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-muted-foreground">
                             <Phone className="h-4 w-4" />
                             <span>{user?.phoneNumber}</span>
                         </div>

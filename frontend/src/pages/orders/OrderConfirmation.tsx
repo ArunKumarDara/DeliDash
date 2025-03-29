@@ -408,11 +408,11 @@ export default function OrderConfirmation() {
                                             {restaurant.address}
                                         </p>
                                     </div>
-                                    <Button variant="outline" size="sm" className="shrink-0" asChild>
-                                        <a href={`tel:${restaurant.phoneNumber}`}>
-                                            <Phone className="h-4 w-4 mr-2" />
-                                            Call
-                                        </a>
+                                    <Button variant="outline" size="sm" className="shrink-0" disabled>
+                                        {/* <a href={`tel:${restaurant.phoneNumber}`}> */}
+                                        <Phone className="h-4 w-4 mr-2" />
+                                        Call
+                                        {/* </a> */}
                                     </Button>
                                 </div>
                             </Card>
@@ -467,13 +467,13 @@ export default function OrderConfirmation() {
             <Card className="mt-8 p-6">
                 <h2 className="text-xl font-semibold mb-4">Need help with your order?</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Button variant="outline" className="gap-2" asChild>
-                        <a href="9100401610">
-                            <Phone className="h-4 w-4" />
-                            Call Us
-                        </a>
+                    <Button variant="outline" className="gap-2" disabled>
+                        {/* <a href="9100401610"> */}
+                        <Phone className="h-4 w-4" />
+                        Call Us
+                        {/* </a> */}
                     </Button>
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2" disabled>
                         <MessageSquare className="h-4 w-4" />
                         Chat Support
                     </Button>

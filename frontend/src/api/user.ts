@@ -97,3 +97,23 @@ export const updateUser = async (data: UpdateUserData) => {
     );
   }
 };
+
+export const logout = async () => {
+  try {
+    const response = await API.post(
+      "/users/logout",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const apiError = error as ApiError;
+    throw new Error(
+      apiError.response?.data?.message ||
+        apiError.message ||
+        "Logout failed. Please try again."
+    );
+  }
+};

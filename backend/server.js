@@ -8,11 +8,12 @@ import restaurantRouter from "./router/restaurantRouter.js";
 import menuRouter from "./router/menu.js";
 import addressRouter from "./router/addressRouter.js";
 import orderRouter from "./router/orderRouter.js";
+import serverless from "serverless-http";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+// const port = process.env.PORT || 5000;
 
 (async () => {
   await dbConfig();
@@ -35,7 +36,9 @@ const port = process.env.PORT || 5000;
     res.send("Hello, world!");
   });
 
-  app.listen(port, () => {
-    console.log(`🚀 Server is running on port ${port}`);
-  });
+  // app.listen(port, () => {
+  //   console.log(`🚀 Server is running on port ${port}`);
+  // });
 })();
+
+export default handler = serverless(app);

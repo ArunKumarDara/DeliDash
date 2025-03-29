@@ -138,9 +138,7 @@ export const updateAddress = async (req, res) => {
 
 export const setDefaultAddress = async (req, res) => {
   try {
-    console.log(req);
     const { addressId } = req.params;
-    console.log(addressId);
     const userId = req.user.id;
 
     // First verify the address exists and belongs to the user

@@ -2,7 +2,43 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Package, Clock, AlertTriangle } from "lucide-react";
 import { Link } from "react-router";
-import { Order } from "./types";
+
+interface MenuItem {
+    _id: string;
+    item: {
+        _id: string;
+        name: string;
+        price: number;
+        isVeg?: boolean;
+    };
+    quantity: number;
+    restaurant: {
+        _id: string;
+        name: string;
+        address: string;
+        phoneNumber: string;
+    };
+}
+
+interface Order {
+    _id: string;
+    status: 'placed' | 'confirmed' | 'preparing' | 'out-for-delivery' | 'delivered' | 'cancelled';
+    totalAmount: number;
+    menuItems: MenuItem[];
+    addressId: {
+        address: string;
+        phoneNumber: string;
+    };
+    deliveryTime: string;
+    deliveryInstructions?: string;
+    paymentMethod: string;
+    createdAt: string;
+    updatedAt: string;
+    confirmedAt?: string;
+    preparingAt?: string;
+    outForDeliveryAt?: string;
+    deliveredAt?: string;
+}
 
 interface OrdersTabProps {
     orders: Order[];
@@ -14,6 +50,8 @@ interface OrdersTabProps {
     refetch: () => void;
     fetchNextPage: () => void;
 }
+
+const deliveryFee = 20
 
 export function OrdersTab({
     orders,
@@ -86,6 +124,11 @@ export function OrdersTab({
                     new Set(order.menuItems.map((item) => item.restaurant.name))
                 ).join(", ");
 
+                const total = order.menuItems.reduce(
+                    (sum, { item: { price }, quantity }) => sum + (price * quantity),
+                    0
+                );
+
                 return (
                     <Card key={order._id} className="p-6">
                         <div className="flex flex-col gap-4">
@@ -99,10 +142,10 @@ export function OrdersTab({
                                 <div className="text-right">
                                     <div
                                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === "delivered"
-                                                ? "bg-green-100 text-green-800"
-                                                : order.status === "cancelled"
-                                                    ? "bg-red-100 text-red-800"
-                                                    : "bg-blue-100 text-blue-800"
+                                            ? "bg-green-100 text-green-800"
+                                            : order.status === "cancelled"
+                                                ? "bg-red-100 text-red-800"
+                                                : "bg-blue-100 text-blue-800"
                                             }`}
                                     >
                                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -125,11 +168,11 @@ export function OrdersTab({
                                 ))}
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground text-sm">Delivery Charges</span>
-                                    <span>₹40</span>
+                                    <span>{`₹${deliveryFee}`}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-muted-foreground text-sm">Taxes & Charges</span>
-                                    <span>₹{Math.round(order.totalAmount * 0.05)}</span>
+                                    <span>₹{Math.round(total * 0.05)}</span>
                                 </div>
                             </div>
 
@@ -147,7 +190,7 @@ export function OrdersTab({
                                 <div className="text-right">
                                     <span className="font-medium">Total Amount</span>
                                     <span className="font-semibold block">
-                                        ₹{order.totalAmount + Math.round(order.totalAmount * 0.05)}
+                                        ₹{order.totalAmount}
                                     </span>
                                 </div>
                             </div>

@@ -18,6 +18,10 @@ import Profile from "./pages/profile/Profile";
 // import AdminDashboard from "./admin/AdminDashboard";
 import Dashboard from "./admin/dashBoard/Dashboard";
 import OrderConfirmation from "./pages/orders/OrderConfirmation";
+import AdminRoute from "./components/admin/Adminroute";
+import Grocery from "./pages/grocery/Grocery";
+import Bakes from "./pages/bakes/Bakes";
+// import Bakery from "./pages/bakes/Bakes";
 // import AdminRestaurants from "./admin/restaurants/Restaurants";
 
 
@@ -37,17 +41,17 @@ function App() {
               <Route index element={<Home />} />
               <Route path="restaurants" >
                 <Route index element={<Restaurants />} />
-                <Route path=":restaurantId" element={<RestaurantMenu />} /> {/* Dynamic route using 'name' */}
+                <Route path=":restaurantId" element={<RestaurantMenu />} />
               </Route>
+              <Route path="grocery" element={<Grocery />} />
+              <Route path="bakes" element={<Bakes />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="profile" element={<Profile />} />
-              <Route path="admin" element={<Dashboard />} />
+              {/* <Route path="admin" element={<Dashboard />} /> */}
               <Route path="order-confirmation/:orderId" element={<OrderConfirmation />} />
             </Route>
-            <Route path="/admin" element={<Dashboard />} />
-            <Route path="admin">
+            <Route path="/admin" element={<AdminRoute />}>
               <Route index element={<Dashboard />} />
-              {/* <Route path="restaurants" element={<AdminRestaurants />} /> */}
             </Route>
           </Routes>
         </BrowserRouter>

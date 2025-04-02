@@ -6,6 +6,7 @@ import User from "../models/userModel.js";
 export const signup = async (req, res) => {
   try {
     const { phoneNumber, userName, mPin } = req.body;
+    const avatar = req.file?.path;
     if (!phoneNumber || !userName || !mPin) {
       return res
         .status(400)
@@ -28,7 +29,7 @@ export const signup = async (req, res) => {
 
     const hashedMpin = await bcrypt.hash(mPin.toString(), 10);
 
-    user = new User({ userName, phoneNumber, mPin: hashedMpin });
+    user = new User({ userName, phoneNumber, mPin: hashedMpin, avatar });
     await user.save();
 
     return res

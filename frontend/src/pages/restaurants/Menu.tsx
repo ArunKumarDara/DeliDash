@@ -20,8 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { useState, useCallback } from "react";
 import { debounce } from "lodash"
-import { CutlerySpinner } from "@/components/spinner/CutlerySpinner";
-import FoodSpinner from "@/components/spinner/FoodSpinner";
+import { ScrollArea } from "@/components/ui/scroll-area"
+import Loading from "@/components/spinner/Loader";
 
 
 interface MenuItem {
@@ -164,96 +164,98 @@ export default function RestaurantMenu() {
                 </div>
 
                 {/* Menu Items */}
-                <div className="space-y-8">
-                    {isLoading ? (
-                        <div className="lg:w-3xl md:w-2xs"><FoodSpinner /></div>
-                    ) : isMenuEmpty ? (
-                        <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
-                            <div className="text-6xl">🍽️</div>
-                            <h3 className="text-xl font-semibold">No Menu Items Available</h3>
-                            <p className="text-muted-foreground text-center max-w-md">
-                                Sorry, there are currently no items available in this menu.
-                                Please check back later or contact the restaurant for more information.
-                            </p>
-                            <Button
-                                variant="outline"
-                                onClick={() => window.location.reload()}
-                                className="mt-4"
-                            >
-                                Refresh Menu
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="space-y-8 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
-                            {/* Active filters display */}
-                            {(searchQuery || selectedCategory) && (
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    {searchQuery && (
-                                        <Badge variant="secondary" className="gap-1">
-                                            Search: {searchQuery}
-                                            <button
-                                                onClick={() => setSearchQuery("")}
-                                                className="ml-1 hover:text-foreground"
-                                            >
-                                                ×
-                                            </button>
-                                        </Badge>
-                                    )}
-                                    {selectedCategory && (
-                                        <Badge variant="secondary" className="gap-1">
-                                            {menuCategories.find(c => c.id === selectedCategory)?.name}
-                                            <button
-                                                onClick={() => setSelectedCategory("")}
-                                                className="ml-1 hover:text-foreground"
-                                            >
-                                                ×
-                                            </button>
-                                        </Badge>
-                                    )}
-                                </div>
-                            )}
+                <ScrollArea className="h-screen">
+                    <div className="space-y-8">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center justify-center min-h-[300px] lg:w-3xl md:w-2xs w-dvw p-4 md:p-0"><Loading /></div>
+                        ) : isMenuEmpty ? (
+                            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                                <div className="text-6xl">🍽️</div>
+                                <h3 className="text-xl font-semibold">No Menu Items Available</h3>
+                                <p className="text-muted-foreground text-center max-w-md">
+                                    Sorry, there are currently no items available in this menu.
+                                    Please check back later or contact the restaurant for more information.
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => window.location.reload()}
+                                    className="mt-4"
+                                >
+                                    Refresh Menu
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="space-y-8 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                                {/* Active filters display */}
+                                {(searchQuery || selectedCategory) && (
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        {searchQuery && (
+                                            <Badge variant="secondary" className="gap-1">
+                                                Search: {searchQuery}
+                                                <button
+                                                    onClick={() => setSearchQuery("")}
+                                                    className="ml-1 hover:text-foreground"
+                                                >
+                                                    ×
+                                                </button>
+                                            </Badge>
+                                        )}
+                                        {selectedCategory && (
+                                            <Badge variant="secondary" className="gap-1">
+                                                {menuCategories.find(c => c.id === selectedCategory)?.name}
+                                                <button
+                                                    onClick={() => setSelectedCategory("")}
+                                                    className="ml-1 hover:text-foreground"
+                                                >
+                                                    ×
+                                                </button>
+                                            </Badge>
+                                        )}
+                                    </div>
+                                )}
 
-                            {/* Menu items list */}
-                            {data?.pages.map((page, pageIndex) => (
-                                <div key={pageIndex} className="space-y-4">
-                                    {page.data.map((item: MenuItem) => (
-                                        <MenuItem
-                                            key={item._id}
-                                            item={item}
-                                            restaurant={restaurant.data}
-                                        />
-                                    ))}
-                                </div>
-                            ))}
-                            {hasNextPage && (
-                                <div className="pt-4 pb-8">
-                                    <Button
-                                        onClick={() => fetchNextPage()}
-                                        disabled={isFetchingNextPage}
-                                        variant="outline"
-                                        className="w-full"
-                                    >
-                                        {isFetchingNextPage
-                                            ? "Loading more items..."
-                                            : "Load more items"}
-                                    </Button>
-                                </div>
-                            )}
+                                {/* Menu items list */}
+                                {data?.pages.map((page, pageIndex) => (
+                                    <div key={pageIndex} className="space-y-4">
+                                        {page.data.map((item: MenuItem) => (
+                                            <MenuItem
+                                                key={item._id}
+                                                item={item}
+                                                restaurant={restaurant.data}
+                                            />
+                                        ))}
+                                    </div>
+                                ))}
+                                {hasNextPage && (
+                                    <div className="pt-4 pb-8">
+                                        <Button
+                                            onClick={() => fetchNextPage()}
+                                            disabled={isFetchingNextPage}
+                                            variant="outline"
+                                            className="w-full"
+                                        >
+                                            {isFetchingNextPage
+                                                ? "Loading more items..."
+                                                : "Load more items"}
+                                        </Button>
+                                    </div>
+                                )}
 
-                            {!hasNextPage && data?.pages[0].data.length > 0 && (
-                                <div className="text-center text-muted-foreground py-4">
-                                    You've reached the end of the menu
-                                </div>
-                            )}
+                                {!hasNextPage && data?.pages[0].data.length > 0 && (
+                                    <div className="text-center text-muted-foreground py-4">
+                                        You've reached the end of the menu
+                                    </div>
+                                )}
 
-                            {data?.pages[0].data.length === 0 && (
-                                <div className="text-center text-muted-foreground py-8">
-                                    No menu items found
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+                                {data?.pages[0].data.length === 0 && (
+                                    <div className="text-center text-muted-foreground py-8">
+                                        No menu items found
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
             </div>
         </div>
     );

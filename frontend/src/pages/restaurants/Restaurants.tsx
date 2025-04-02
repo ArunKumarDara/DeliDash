@@ -18,9 +18,8 @@ import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant"
-import PulseLoader from "@/components/spinner/PulseLoader"
-import { CutlerySpinner } from "@/components/spinner/CutlerySpinner"
-import FoodSpinner from "@/components/spinner/FoodSpinner"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import Loading from "@/components/spinner/Loader"
 
 interface Restaurant {
     _id: string;
@@ -30,7 +29,8 @@ interface Restaurant {
     cuisineType: string;
     rating: number[];
     location?: string;
-    priceRange: number
+    priceRange: number;
+    avatar: string
 }
 
 export default function Restaurants() {
@@ -143,45 +143,46 @@ export default function Restaurants() {
                             </SelectContent>
                         </Select>
                     </div>
+                    <ScrollArea className="h-screen">
+                        {isEmpty && !isLoading && (
+                            <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                                <div className="text-6xl">🍽️</div>
+                                <h3 className="text-xl font-semibold">No Restaurants Available</h3>
+                                <p className="text-muted-foreground text-center max-w-md">
+                                    Sorry, currently there are no restaurants available.
+                                    Please check back later or contact the restaurant for more information.
+                                </p>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => window.location.reload()}
+                                    className="mt-4"
+                                >
+                                    Refresh Menu
+                                </Button>
+                            </div>
+                        )}
 
-                    {isEmpty && !isLoading && (
-                        <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
-                            <div className="text-6xl">🍽️</div>
-                            <h3 className="text-xl font-semibold">No Restaurants Available</h3>
-                            <p className="text-muted-foreground text-center max-w-md">
-                                Sorry, currently there are no restaurants available.
-                                Please check back later or contact the restaurant for more information.
-                            </p>
-                            <Button
-                                variant="outline"
-                                onClick={() => window.location.reload()}
-                                className="mt-4"
-                            >
-                                Refresh Menu
-                            </Button>
-                        </div>
-                    )}
+                        {isLoading ? <div className="lg:w-3xl md:w-2xs w-dvw flex justify-center items-center p-4 md:p-0"><Loading /></div> :
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
+                                {data?.pages.map((page) =>
+                                    page.data.map((restaurant: Restaurant) => (
+                                        <RestaurantCard key={restaurant._id} {...restaurant} />
+                                    ))
+                                )}
+                            </div>}
 
-                    {isLoading ? <div className="lg:w-3xl md:w-2xs flex justify-center items-center"><FoodSpinner /></div> :
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {data?.pages.map((page) =>
-                                page.data.map((restaurant: Restaurant) => (
-                                    <RestaurantCard key={restaurant._id} {...restaurant} />
-                                ))
-                            )}
-                        </div>}
-
-                    {hasNextPage && (
-                        <div className="flex justify-center mt-6">
-                            <Button
-                                variant="outline"
-                                onClick={() => fetchNextPage()}
-                                disabled={isFetchingNextPage}
-                            >
-                                {isFetchingNextPage ? "Loading..." : "Load More"}
-                            </Button>
-                        </div>
-                    )}
+                        {hasNextPage && (
+                            <div className="flex justify-center mt-6">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                >
+                                    {isFetchingNextPage ? "Loading..." : "Load More"}
+                                </Button>
+                            </div>
+                        )}
+                    </ScrollArea>
                 </div>
             </div>
         </div>

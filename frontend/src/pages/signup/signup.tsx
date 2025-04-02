@@ -11,7 +11,7 @@ export default function Signup() {
                         <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                             <CookingPot className="size-4" />
                         </div>
-                        Dine-Express.
+                        DineExpress.
                     </a>
                 </div>
                 <div className="flex flex-1 items-center justify-center">
@@ -22,7 +22,7 @@ export default function Signup() {
             </div>
             <div className="relative hidden bg-muted lg:block">
                 <img
-                    src="/placeholder.svg"
+                    src="https://res.cloudinary.com/dkhc0e1fc/image/upload/v1743433156/10626330_twgexf.jpg"
                     alt="Image"
                     className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                 />

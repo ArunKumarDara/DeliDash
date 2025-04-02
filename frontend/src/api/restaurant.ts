@@ -14,6 +14,7 @@ interface Restaurant {
   phoneNumber: string;
   address: string;
   cuisineType: string;
+  avatar?: File;
 }
 
 interface RestaurantResponse {
@@ -31,6 +32,9 @@ export const addRestaurant = async (
 ): Promise<RestaurantResponse> => {
   try {
     const response = await API.post("/restaurants/add", restaurantData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
       withCredentials: true,
     });
     return response.data;
@@ -50,7 +54,6 @@ export const getRestaurants = async ({
   cuisines,
   ratings,
   priceRange,
-  adminDashboard,
 }: {
   pageParam: number;
   searchTerm?: string;

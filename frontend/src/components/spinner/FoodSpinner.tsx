@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 
 export default function FoodSpinner() {
     return (
-        <div className="flex flex-col items-center justify-center gap-4 h-screen w-full bg-white">
+        <div className="flex flex-col items-center justify-center gap-4 h-fit w-full bg-white">
             <div className="relative h-16 w-16">
                 {/* Animated Fork */}
                 <motion.div

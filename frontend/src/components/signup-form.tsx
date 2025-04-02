@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,10 +24,11 @@ const formSchema = z.object({
     mPin: z.string().length(6, { message: "MPIN must be exactly 6 digits" }).regex(/^\d+$/, {
         message: "MPIN must be numeric",
     }),
+    avatar: z.instanceof(File).optional()
 });
 
 export function SignupForm({ className, ...props }: React.ComponentProps<"form">) {
-
+    const [preview, setPreview] = useState<string | null>(null);
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -52,7 +54,20 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
     })
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
+        console.log(values)
         mutate(values)
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            form.setValue("avatar", file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
@@ -61,6 +76,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
                 className={cn("flex flex-col gap-6", className)}
                 {...props}
                 onSubmit={form.handleSubmit(onSubmit)}
+                encType="multipart/form-data"
             >
                 <div className="flex flex-col items-center gap-2 text-center">
                     <h1 className="text-2xl font-bold">Register your account</h1>
@@ -90,6 +106,38 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
                                 <Label htmlFor="phoneNumber">Phone Number</Label>
                                 <FormControl>
                                     <Input id="phoneNumber" type="text" placeholder="1234567890" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="avatar"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Label htmlFor="avatar">Profile Picture</Label>
+                                <FormControl>
+                                    <div className="flex items-center gap-4">
+                                        {preview ? (
+                                            <img
+                                                src={preview}
+                                                alt="Preview"
+                                                className="w-16 h-16 rounded-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <span className="text-gray-500">No image</span>
+                                            </div>
+                                        )}
+                                        <Input
+                                            id="avatar"
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="cursor-pointer"
+                                        />
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

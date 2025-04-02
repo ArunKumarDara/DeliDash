@@ -17,10 +17,11 @@ interface Restaurant {
     cuisineType: string;
     rating: number[];
     location?: string;
-    priceRange: number
+    priceRange: number;
+    avatar: string
 }
 
-const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisineType, rating }) => {
+const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisineType, rating, avatar }) => {
     const navigate = useNavigate()
 
     return (
@@ -28,17 +29,17 @@ const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisi
             onClick={() => navigate(`/restaurants/${_id}`)} >
             <div className="relative" key={_id}>
                 <img
-                    src={`https://via.placeholder.com/400x200?text=${name}`} // Placeholder image
+                    src={avatar}
                     alt={name}
-                    className="w-full h-[150px] object-cover"
+                    className="w-full h-[200px] object-cover"
                 />
             </div>
 
-            <CardHeader className="pb-2">
+            <CardHeader>
                 <div className="flex justify-between items-start gap-5 w-full">
-                    <div>
-                        <CardTitle className="text-lg">{name}</CardTitle>
-                        <CardDescription className="line-clamp-1">
+                    <div className="flex flex-col items-start">
+                        <CardTitle className="text-lg text-start">{name}</CardTitle>
+                        <CardDescription className="line-clamp-1 text-center">
                             {cuisineType}
                         </CardDescription>
                     </div>
@@ -49,10 +50,9 @@ const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisi
             </CardHeader>
 
             <CardContent>
-                <div className="flex items-center gap-4 justify-between text-sm">
+                <div className="flex flex-col items-center gap-1 justify-between text-sm">
                     <span className="text-muted-foreground">{address}</span>
-                    <span className="text-muted-foreground">-</span>
-                    <span className="text-muted-foreground">{phoneNumber}</span>
+                    <span className="text-muted-foreground">{`+91 ${phoneNumber}`}</span>
                 </div>
             </CardContent>
         </Card>

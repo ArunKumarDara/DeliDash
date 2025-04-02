@@ -112,7 +112,7 @@ export function OrdersTab({
         <div className="space-y-4">
             {orders?.map((order) => {
                 const restaurants = Array.from(
-                    new Set(order.menuItems.map((item) => item.restaurant.name))
+                    new Set(order.menuItems.map((item) => item.restaurant?.name))
                 ).join(", ");
 
                 const total = order.menuItems.reduce(

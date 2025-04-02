@@ -6,10 +6,11 @@ import {
   getRestaurants,
 } from "../controllers/restaurantController.js";
 import { authenticateUser } from "../middleware/authMiddleware.js";
+import { uploadAvatar } from "../middleware/uploadAvatar.js";
 
 const restaurantRouter = express.Router();
 
-restaurantRouter.post("/add", addRestaurant);
+restaurantRouter.post("/add", uploadAvatar, addRestaurant);
 
 restaurantRouter.get("/get", authenticateUser, getRestaurants);
 restaurantRouter.get("/getById", authenticateUser, getRestaurantById);

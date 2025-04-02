@@ -27,6 +27,7 @@ interface User {
     phoneNumber: string,
     userName: string,
     mPin: string
+    avatar?: string;
 }
 
 interface NavbarProps {
@@ -42,14 +43,12 @@ export default function Navbar({ user }: NavbarProps) {
     const logoutMutation = useMutation({
         mutationFn: logout,
         onMutate: () => {
-            // Show loading toast
             toast.loading("Logging out...", {
                 id: "logout"
             });
         },
         onSuccess: () => {
             dispatch(logoutUser())
-            // Update the loading toast to success
             toast.success("Logged out successfully", {
                 id: "logout"
             });
@@ -57,7 +56,6 @@ export default function Navbar({ user }: NavbarProps) {
         },
         onError: (error) => {
             console.error("Logout failed:", error);
-            // Update the loading toast to error
             toast.error("Failed to logout. Please try again.", {
                 id: "logout"
             });
@@ -79,44 +77,108 @@ export default function Navbar({ user }: NavbarProps) {
                 <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
                     <CookingPot className="size-4" />
                 </div>
-                <div className="font-semibold">Dine-Express</div>
+                <div className="font-semibold">DineExpress</div>
             </NavLink>
             <div className="hidden md:flex gap-6">
                 <Link to="/restaurants"><Button className="cursor-pointer" variant="ghost">Restaurants</Button></Link>
                 <Link to="/grocery"><Button className="cursor-pointer" variant="ghost">Grocery</Button></Link>
                 <Link to="/bakes"><Button className="cursor-pointer" variant="ghost">Bakes</Button></Link>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
                 <Toggle />
-                <Cart />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Avatar className="cursor-pointer">
-                            <AvatarImage src="https://github.com/shadcn.png" alt="Profile" />
-                            <AvatarFallback>{user?.userName?.charAt(0) || "U"}</AvatarFallback>
-                        </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigate("/profile")}>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
-                        <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                <div className="flex items-center gap-6">
+                    {/* Desktop Avatar and Username - hidden on mobile */}
+                    <div className="hidden md:flex items-center gap-2">
+                        <div className="flex flex-col items-end">
+                            <span className="text-sm font-medium text-foreground">
+                                {user?.userName}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                                Welcome back
+                            </span>
+                        </div>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="flex items-center gap-2 cursor-pointer">
+                                    <Avatar className="size-8">
+                                        <AvatarImage src={user?.avatar} alt={user?.userName} />
+                                        <AvatarFallback>
+                                            {user?.userName?.charAt(0)?.toUpperCase() || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                                    Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="text-destructive focus:text-destructive"
+                                >
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <Cart />
+                </div>
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" className="md:hidden">
                             <Menu className="size-6" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-64 p-6">
-                        <div className="flex justify-between items-center">
-                            <span className="text-xl font-semibold">Menu</span>
+                    <SheetContent side="left" className="w-64 p-6 flex flex-col">
+                        <div className="flex-1">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xl font-semibold">Menu</span>
+                            </div>
+                            <div className="flex flex-col gap-4 mt-6">
+                                <Link to="/restaurants" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Restaurants</Link>
+                                <Link to="/grocery" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Grocery</Link>
+                                <Link to="/bakes" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Bakes</Link>
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-4 mt-6">
-                            <Link to="/restaurants" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Restaurants</Link>
-                            <Link to="/grocery" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Grocery</Link>
-                            <Link to="/bakes" className="text-lg font-medium" onClick={() => setIsOpen(false)}>Bakes</Link>
-                        </div>
+                        {/* Mobile User Section at bottom of sheet */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="pt-4 border-t flex items-center gap-3 cursor-pointer">
+                                    <Avatar className="size-10">
+                                        <AvatarImage src={user?.avatar} alt={user?.userName} />
+                                        <AvatarFallback>
+                                            {user?.userName?.charAt(0)?.toUpperCase() || "U"}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium">{user?.userName}</span>
+                                        <span className="text-xs text-muted-foreground">View profile</span>
+                                    </div>
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                                <DropdownMenuItem onClick={() => {
+                                    navigate("/profile");
+                                    setIsOpen(false);
+                                }}>
+                                    Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="text-destructive focus:text-destructive"
+                                >
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SheetContent>
                 </Sheet>
             </div>

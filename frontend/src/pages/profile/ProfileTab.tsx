@@ -1,18 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { User, Mail, Phone, Edit2 } from "lucide-react";
+import { User, Phone, Edit2 } from "lucide-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useMutation } from "@tanstack/react-query";
 import { updateUser } from "@/api/user";
 import { loginUser } from "@/store/userSlice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileTabProps {
     user: {
         userName: string;
         phoneNumber: string;
         createdAt: string;
+        avatar: string
     };
 }
 
@@ -50,8 +52,13 @@ export function ProfileTab({ user }: ProfileTabProps) {
                 <div className="max-w-2xl space-y-6">
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-                                <User className="h-10 w-10 text-primary" />
+                            <div className="h-16 w-15 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Avatar className="size-15">
+                                    <AvatarImage src={user?.avatar} alt={user?.userName} />
+                                    <AvatarFallback>
+                                        {user?.userName?.charAt(0)?.toUpperCase() || "U"}
+                                    </AvatarFallback>
+                                </Avatar>
                             </div>
                             <div className="flex flex-col justify-start items-start">
                                 <h2 className="text-2xl font-semibold">{user?.userName}</h2>

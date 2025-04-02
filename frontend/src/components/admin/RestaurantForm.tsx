@@ -1,4 +1,5 @@
 // src/app/components/admin/RestaurantForm.tsx
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -33,6 +34,7 @@ import { addRestaurant } from "@/api/restaurant";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
 import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label";
 
 const restaurantFormSchema = z.object({
     name: z.string().min(2, {
@@ -41,6 +43,7 @@ const restaurantFormSchema = z.object({
     phoneNumber: z.string().min(10, {
         message: "Phone number must be at least 10 digits.",
     }),
+    avatar: z.instanceof(File).optional(),
     address: z.string().min(5, {
         message: "Address must be at least 5 characters.",
     }),
@@ -69,6 +72,7 @@ interface RestaurantFormProps {
 }
 
 export default function RestaurantForm({ open, onOpenChange, trigger, restaurant }: RestaurantFormProps) {
+    const [preview, setPreview] = useState<string | null>(null);
     const queryClient = useQueryClient();
     const form = useForm<RestaurantFormValues>({
         resolver: zodResolver(restaurantFormSchema),
@@ -96,6 +100,18 @@ export default function RestaurantForm({ open, onOpenChange, trigger, restaurant
 
     const onSubmit = (values: RestaurantFormValues) => {
         mutate(values);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            form.setValue("avatar", file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
@@ -146,6 +162,38 @@ export default function RestaurantForm({ open, onOpenChange, trigger, restaurant
                                     <FormLabel>Address</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Address" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="avatar"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <Label htmlFor="avatar">Profile Picture</Label>
+                                    <FormControl>
+                                        <div className="flex items-center gap-4">
+                                            {preview ? (
+                                                <img
+                                                    src={preview}
+                                                    alt="Preview"
+                                                    className="w-16 h-16 rounded-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                                    <span className="text-gray-500">No image</span>
+                                                </div>
+                                            )}
+                                            <Input
+                                                id="avatar"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                                className="cursor-pointer"
+                                            />
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

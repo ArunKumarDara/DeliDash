@@ -6,6 +6,7 @@ export const addRestaurant = async (req, res) => {
   try {
     const { name, phoneNumber, cuisineType, rating, location, address } =
       req.body;
+    const avatar = req.file?.path;
 
     if (!name || !phoneNumber || !cuisineType) {
       return res
@@ -28,6 +29,7 @@ export const addRestaurant = async (req, res) => {
       cuisineType,
       rating: rating || 0,
       location,
+      avatar,
     });
 
     res.status(201).json({

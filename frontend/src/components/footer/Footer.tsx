@@ -8,7 +8,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Company Info */}
                     <div className="space-y-4">
-                        <h3 className="text-xl font-semibold text-white">Dine-Express</h3>
+                        <h3 className="text-xl font-semibold text-white">DineExpress</h3>
                         <p className="text-sm text-zinc-400">
                             Delivering happiness to your doorstep. Experience the best food delivery service in your city.
                         </p>
@@ -85,15 +85,15 @@ const Footer = () => {
                         <ul className="space-y-3">
                             <li className="flex items-center space-x-3 text-sm text-zinc-400">
                                 <MapPin className="h-4 w-4" />
-                                <span>123 Main Street, City, State 12345</span>
+                                <span>Vidhyanagar, near Indian Post Office, 524413</span>
                             </li>
                             <li className="flex items-center space-x-3 text-sm text-zinc-400">
                                 <Phone className="h-4 w-4" />
-                                <span>+91 1234567890</span>
+                                <span>+91 9381219847</span>
                             </li>
                             <li className="flex items-center space-x-3 text-sm text-zinc-400">
                                 <Mail className="h-4 w-4" />
-                                <span>support@dine-express.com</span>
+                                <span>dinexpress32@gmail.com</span>
                             </li>
                         </ul>
                     </div>

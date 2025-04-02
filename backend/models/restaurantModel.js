@@ -12,6 +12,9 @@ const restaurantSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  avatar: {
+    type: String,
+  },
   phoneNumber: {
     type: String,
     required: true,

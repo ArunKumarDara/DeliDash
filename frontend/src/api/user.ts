@@ -4,6 +4,7 @@ interface SignupData {
   userName: string;
   phoneNumber: string;
   mPin: string;
+  avatar?: File;
 }
 
 interface LoginData {
@@ -28,7 +29,7 @@ export const signupUser = async (data: SignupData) => {
   try {
     const response = await API.post("/users/signup", data, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
       },
       withCredentials: true,
     });

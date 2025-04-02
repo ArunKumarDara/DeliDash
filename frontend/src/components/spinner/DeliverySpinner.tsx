@@ -23,13 +23,13 @@ export default function DeliverySpinner() {
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 />
             </motion.div>
-            <motion.p
+            {/* <motion.p
                 className="text-sm font-medium text-gray-700"
                 animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 2, repeat: Infinity }}
             >
                 Your food is on the way!
-            </motion.p>
+            </motion.p> */}
         </div>
     );
 }

@@ -7,10 +7,11 @@ import {
   logout,
 } from "../controllers/userController.js";
 import { authenticateUser } from "../middleware/authMiddleware.js";
+import { uploadAvatar } from "../middleware/uploadAvatar.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/signup", signup);
+userRouter.post("/signup", uploadAvatar, signup);
 userRouter.post("/login", login);
 userRouter.get("/profile", authenticateUser, getUserProfile);
 userRouter.post("/update", authenticateUser, updateUserProfile);

@@ -17,6 +17,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner"
+import { updatePaymentStatus } from "@/api/payment";
 
 interface Order {
     _id: string;
@@ -66,7 +67,6 @@ const statusActions = {
 
 export default function OrdersTable() {
     const queryClient = useQueryClient();
-    // const { toast } = useToast();
 
     const {
         data,
@@ -86,10 +86,17 @@ export default function OrdersTable() {
     });
 
     const { mutate: updateStatus, isPending: isUpdating } = useMutation({
-        mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
-            updateOrderStatus(orderId, status),
+        mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+            await updateOrderStatus(orderId, status);
+            if (status === 'delivered') {
+                const order = orders.find(o => o._id === orderId);
+                if (order?.payment.paymentMethod === 'Cash on Delivery' && order.payment.status === 'pending') {
+                    await updatePaymentStatus(order.payment._id, 'paid');
+                }
+            }
+        },
         onMutate: async ({ orderId, status }) => {
-            await queryClient.cancelQueries({ queryKey: ['orders'] });
+            await queryClient.invalidateQueries({ queryKey: ['orders'] });
             const previousOrders = queryClient.getQueryData(['orders']);
 
             queryClient.setQueryData(['orders'], (old: any) => {
@@ -167,6 +174,7 @@ export default function OrdersTable() {
 
     const orders = data?.pages.flatMap(page => page.data) || [];
     const isEmpty = orders.length === 0;
+    console.log(orders)
 
     if (isEmpty) {
         return (
@@ -211,6 +219,7 @@ export default function OrdersTable() {
                             <TableHead>Status</TableHead>
                             <TableHead>Delivery Info</TableHead>
                             <TableHead>Payment</TableHead>
+                            <TableHead>Payment Status</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -272,7 +281,12 @@ export default function OrdersTable() {
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className="capitalize">
-                                        {order.paymentMethod.toLowerCase()}
+                                        {order.payment.paymentMethod.toLowerCase()}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline" className="border-green-500 text-green-500">
+                                        {order.payment.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">

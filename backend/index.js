@@ -8,6 +8,7 @@ import restaurantRouter from "./router/restaurantRouter.js";
 import menuRouter from "./router/menu.js";
 import addressRouter from "./router/addressRouter.js";
 import orderRouter from "./router/orderRouter.js";
+import paymentRouter from "./router/paymentRouter.js";
 // import serverless from "serverless-http";
 
 dotenv.config();
@@ -31,6 +32,7 @@ const port = process.env.PORT || 5000;
   app.use("/api/v1/menu", menuRouter);
   app.use("/api/v1/address", addressRouter);
   app.use("/api/v1/orders", orderRouter);
+  app.use("/api/v1/payment", paymentRouter);
 
   app.get("/", (req, res) => {
     res.send("Hello, world!");

@@ -1,6 +1,7 @@
 import API from "./axiosInstance";
 
 interface OrderResponse {
+  order: OrderResponse;
   _id: string;
   addressId: {
     _id: string;
@@ -24,7 +25,15 @@ interface OrderResponse {
     };
   }[];
   totalAmount: number;
-  paymentMethod: string;
+  payment: PaymentDetails;
+}
+
+interface PaymentDetails {
+  method: string;
+  transactionId?: string; // Optional, since it may not exist for "Cash on Delivery"
+  MUID?: string;
+  status: string;
+  paymentMethod: string; // Merchant Unique ID (if applicable)
 }
 
 interface OrderPayload {
@@ -40,7 +49,7 @@ interface OrderPayload {
     quantity: number;
   }[];
   totalAmount: number;
-  paymentMethod: string;
+  // payment: PaymentDetails;
 }
 
 interface ApiError {

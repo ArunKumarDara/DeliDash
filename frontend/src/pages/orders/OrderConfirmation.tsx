@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useParams } from "react-router";
 import { getOrderById } from "@/api/order";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -26,6 +25,11 @@ interface MenuItem {
     };
 }
 
+interface Payment {
+    _id: string;
+    status: string;
+    paymentMethod: string;
+}
 interface Order {
     _id: string;
     status: 'placed' | 'confirmed' | 'preparing' | 'out-for-delivery' | 'delivered' | 'cancelled';
@@ -37,8 +41,9 @@ interface Order {
     };
     deliveryTime: string;
     deliveryInstructions?: string;
-    paymentMethod: string;
+    paymentId: string;
     createdAt: string;
+    payment: Payment;
     updatedAt: string;
     confirmedAt?: string;
     preparingAt?: string;
@@ -116,9 +121,13 @@ export default function OrderConfirmation() {
         );
     }
 
+
+
     const order: Order = data.order;
     const progressPercentage = getProgressPercentage(order.status);
     const isCancelled = order.status === 'cancelled';
+
+    console.log(order)
 
     // Group menu items by restaurant
     const restaurantsMap = new Map<string, MenuItem[]>();
@@ -424,10 +433,10 @@ export default function OrderConfirmation() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <CreditCard className="h-5 w-5 text-muted-foreground" />
-                        <span className="font-medium">{order.paymentMethod}</span>
+                        <span className="font-medium">{order.payment.paymentMethod}</span>
                     </div>
                     <Badge variant="outline" className="border-green-500 text-green-500">
-                        {order.paymentMethod === "Cash on Delivery" ? "To Pay" : "Paid"}
+                        {order.payment.status}
                     </Badge>
                 </div>
             </Card>

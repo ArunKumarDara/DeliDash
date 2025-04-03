@@ -10,10 +10,10 @@ import { useState } from "react";
 import AddressForm from "@/components/address/AddressForm";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { placeOrder } from "@/api/order";
 import { useNavigate } from "react-router";
 import { clearCart } from "@/store/cartSlice";
 import DeliverySpinner from "@/components/spinner/DeliverySpinner";
+import { initiatePhonePePayment } from "@/api/payment";
 
 interface SavedAddress {
     _id: string;
@@ -21,28 +21,8 @@ interface SavedAddress {
     address: string;
     phoneNumber: string;
     isDefault: boolean;
-    receiverName: string
+    receiverName: string;
 }
-
-interface CartItem {
-    item: {
-        _id: string;
-        name: string;
-        price: number;
-    };
-    quantity: number;
-}
-
-// Define OrderPayload
-interface OrderPayload {
-    addressId: string;
-    deliveryTime: string;
-    deliveryInstructions: string;
-    menuItems: CartItem[];
-    totalAmount: number;
-    paymentMethod: string;
-}
-
 
 export default function Checkout() {
     const dispatch = useDispatch()
@@ -76,16 +56,15 @@ export default function Checkout() {
 
     const addresses = data?.pages.flatMap((page) => page.data) || [];
 
-    const { mutate, isPending: isOrderPending } = useMutation<OrderPayload, Error, OrderPayload>({
+    const { mutate, isPending: isOrderPending } = useMutation({
         mutationKey: ["orders"],
-        mutationFn: placeOrder,
+        mutationFn: initiatePhonePePayment,
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["orders"] });
             toast.success("Order placed successfully!");
             dispatch(clearCart())
             console.log(data)
-            // Optionally, navigate to order confirmation page
-            navigate(`/order-confirmation/${data?.order?._id}`)
+            navigate(`/order-confirmation/${data?.orderId}`)
         },
         onError: (error) => {
             toast.error("Uh oh! Something went wrong.", {
@@ -113,15 +92,17 @@ export default function Checkout() {
             });
             return;
         }
-
-        mutate({
+        const data = {
             addressId: selectedAddressId,
             deliveryTime: selectedDeliveryTime,
             deliveryInstructions,
             menuItems: items,
-            totalAmount: total, // Including delivery fee
-            paymentMethod: selectedPayment,
-        });
+            amount: total,
+            MUID: "MUID" + Date.now(),
+            transactionId: "T" + Date.now(),
+            paymentMethod: selectedPayment
+        }
+        mutate(data)
     };
 
     const deliveryFee = 20
@@ -233,7 +214,7 @@ export default function Checkout() {
                             <h2 className="text-xl font-semibold">Payment Method</h2>
                         </div>
                         <div className="space-y-3">
-                            {["Credit/Debit Card", "UPI", "Cash on Delivery"].map((method) => (
+                            {["Credit/Debit Card", "PhonePe UPI", "Cash on Delivery"].map((method) => (
                                 <div
                                     key={method}
                                     className="flex items-center gap-4 p-4 border rounded-lg hover:border-primary transition-colors"

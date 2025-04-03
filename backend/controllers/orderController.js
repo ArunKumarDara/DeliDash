@@ -9,36 +9,53 @@ export const addOrder = async (req, res) => {
       deliveryInstructions,
       menuItems,
       totalAmount,
-      paymentMethod,
+      payment,
     } = req.body;
 
     // Validate request body
-    if (
-      !addressId ||
-      !deliveryTime ||
-      !menuItems ||
-      !totalAmount ||
-      !paymentMethod
-    ) {
+    if (!addressId || !deliveryTime || !menuItems || !totalAmount || !payment) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const newOrder = new Order({
-      addressId,
-      deliveryTime,
-      deliveryInstructions,
-      menuItems,
-      totalAmount,
-      paymentMethod,
-      userId,
-    });
-    let savedOrder = await newOrder.save();
+    console.log(addressId, deliveryTime, menuItems, totalAmount, payment);
 
-    savedOrder = await savedOrder.populate([
-      { path: "menuItems.item", model: "MenuItem" },
-      { path: "menuItems.restaurant", model: "Restaurant" },
-      { path: "addressId", model: "Address" },
-    ]);
+    const data = {
+      merchantId: process.env.MERCHANT_ID,
+      merchantTransactionId: payment.transactionId,
+      amount: totalAmount * 100,
+      redirectURL: `http://localhost:5173/order-confirmation?id=${payment.merchantTransactionId}`,
+      redirectMode: "POST",
+      mobileNumber: "3444",
+      paymentInstrument: {
+        type: "PAY_PAGE",
+      },
+    };
+    const keyIndex = 1;
+    const payload = JSON.stringify(data);
+    const payloadMain = Buffer.from(payload).toString("base64");
+
+    const string = payloadMain + `/pg/v1/pay` + process.send.SALT_KEY;
+
+    const sha256 = crypto.createHash(sha256).update(string).digest("hex");
+
+    const checksum = sha256 + "###" + process.env.SALT_INDEX;
+
+    // const newOrder = new Order({
+    //   addressId,
+    //   deliveryTime,
+    //   deliveryInstructions,
+    //   menuItems,
+    //   totalAmount,
+    //   paymentMethod,
+    //   userId,
+    // });
+    // let savedOrder = await newOrder.save();
+
+    // savedOrder = await savedOrder.populate([
+    //   { path: "menuItems.item", model: "MenuItem" },
+    //   { path: "menuItems.restaurant", model: "Restaurant" },
+    //   { path: "addressId", model: "Address" },
+    // ]);
 
     return res
       .status(201)
@@ -60,7 +77,8 @@ export const getOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("menuItems.item")
       .populate("menuItems.restaurant")
-      .populate("addressId");
+      .populate("addressId")
+      .populate("payment");
 
     const totalOrders = await Order.countDocuments();
     return res.status(200).json({
@@ -88,7 +106,8 @@ export const getOrderById = async (req, res) => {
     const order = await Order.findById(orderId)
       .populate("menuItems.item")
       .populate("menuItems.restaurant")
-      .populate("addressId");
+      .populate("addressId")
+      .populate("payment");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });

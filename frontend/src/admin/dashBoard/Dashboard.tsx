@@ -2,7 +2,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Utensils, ListOrdered, Settings } from "lucide-react";
 import RestaurantList from "@/components/admin/RestaurantList"
-import OrdersTable from "@/components/admin/OrdersTable"
+import OrdersTable from "../../components/admin/OrdersTable"
 import AdminSettings from "@/components/admin/AdminSettings"
 
 export default function AdminDashboard() {

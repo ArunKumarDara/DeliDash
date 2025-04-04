@@ -4,7 +4,7 @@ interface AddressData {
   phoneNumber: string;
   address: string;
   isDefault: boolean;
-  type: "Home" | "Work" | "Other";
+  type: "Home" | "Office" | "Other";
 }
 
 interface ApiError {
@@ -73,12 +73,16 @@ export const addAddress = async (data: AddressData) => {
 // Update an existing address
 export const updateAddress = async (id: string, data: AddressData) => {
   try {
-    const response = await API.put("/address/updateStatus", data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    });
+    const response = await API.put(
+      "/address/updateStatus",
+      { data, id },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error: unknown) {
     const apiError = error as ApiError;

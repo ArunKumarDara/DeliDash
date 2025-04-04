@@ -1,41 +1,5 @@
 import API from "./axiosInstance";
 
-interface OrderResponse {
-  order: OrderResponse;
-  _id: string;
-  addressId: {
-    _id: string;
-    street: string;
-    city: string;
-    zip: string;
-  };
-  deliveryTime: string;
-  deliveryInstructions?: string;
-  menuItems: {
-    item: {
-      _id: string;
-      name: string;
-      price: number;
-    };
-    quantity: number;
-    restaurant: {
-      _id: string;
-      name: string;
-      cuisineType: string;
-    };
-  }[];
-  totalAmount: number;
-  payment: PaymentDetails;
-}
-
-interface PaymentDetails {
-  method: string;
-  transactionId?: string; // Optional, since it may not exist for "Cash on Delivery"
-  MUID?: string;
-  status: string;
-  paymentMethod: string; // Merchant Unique ID (if applicable)
-}
-
 interface OrderPayload {
   addressId: string;
   deliveryTime: string;
@@ -49,7 +13,6 @@ interface OrderPayload {
     quantity: number;
   }[];
   totalAmount: number;
-  // payment: PaymentDetails;
 }
 
 interface ApiError {
@@ -61,11 +24,9 @@ interface ApiError {
   message?: string;
 }
 
-export const placeOrder = async (
-  orderData: OrderPayload
-): Promise<OrderPayload> => {
+export const placeOrder = async (orderData: OrderPayload) => {
   try {
-    const response = await API.post<OrderPayload>("/orders/add", orderData, {
+    const response = await API.post("/orders/add", orderData, {
       withCredentials: true,
     });
 
@@ -81,9 +42,9 @@ export const placeOrder = async (
   }
 };
 
-export const getOrderById = async (orderId: string): Promise<OrderResponse> => {
+export const getOrderById = async (orderId: string) => {
   try {
-    const response = await API.get<OrderResponse>("/orders/getById", {
+    const response = await API.get("/orders/getById", {
       params: { orderId: orderId },
       withCredentials: true,
     });
@@ -99,13 +60,9 @@ export const getOrderById = async (orderId: string): Promise<OrderResponse> => {
   }
 };
 
-export const getOrders = async ({
-  pageParam = 1,
-}: {
-  pageParam: number;
-}): Promise<OrderResponse[]> => {
+export const getOrders = async ({ pageParam = 1 }: { pageParam: number }) => {
   try {
-    const response = await API.get<OrderResponse[]>("/orders/get", {
+    const response = await API.get("/orders/get", {
       params: { pageParam: pageParam, limit: 5 },
       withCredentials: true,
     });
@@ -125,9 +82,9 @@ export const getOrdersByUserId = async ({
   pageParam = 1,
 }: {
   pageParam: number;
-}): Promise<OrderResponse[]> => {
+}) => {
   try {
-    const response = await API.get<OrderResponse[]>("/orders/getByUserId", {
+    const response = await API.get("/orders/getByUserId", {
       params: { pageParam: pageParam, limit: 10 },
       withCredentials: true,
     });
@@ -144,16 +101,13 @@ export const getOrdersByUserId = async ({
 };
 
 // Add this to your existing interfaces
-interface UpdateOrderStatusResponse extends OrderResponse {
-  status: string;
-}
+// interface UpdateOrderStatusResponse extends Order {
+//   status: string;
+// }
 
-export const updateOrderStatus = async (
-  orderId: string,
-  status: string
-): Promise<UpdateOrderStatusResponse> => {
+export const updateOrderStatus = async (orderId: string, status: string) => {
   try {
-    const response = await API.post<UpdateOrderStatusResponse>(
+    const response = await API.post(
       "/orders/updateStatus",
       { orderId, status },
       { withCredentials: true }

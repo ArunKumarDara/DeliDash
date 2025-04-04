@@ -113,7 +113,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"form">
                     <FormField
                         control={form.control}
                         name="avatar"
-                        render={({ field }) => (
+                        render={() => (
                             <FormItem>
                                 <Label htmlFor="avatar">Profile Picture</Label>
                                 <FormControl>

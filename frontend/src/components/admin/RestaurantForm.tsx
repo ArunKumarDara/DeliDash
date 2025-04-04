@@ -71,7 +71,7 @@ interface RestaurantFormProps {
     restaurant?: Restaurant | null;
 }
 
-export default function RestaurantForm({ open, onOpenChange, trigger, restaurant }: RestaurantFormProps) {
+export default function RestaurantForm({ open, onOpenChange, trigger }: RestaurantFormProps) {
     const [preview, setPreview] = useState<string | null>(null);
     const queryClient = useQueryClient();
     const form = useForm<RestaurantFormValues>({
@@ -170,7 +170,7 @@ export default function RestaurantForm({ open, onOpenChange, trigger, restaurant
                         <FormField
                             control={form.control}
                             name="avatar"
-                            render={({ field }) => (
+                            render={() => (
                                 <FormItem>
                                     <Label htmlFor="avatar">Profile Picture</Label>
                                     <FormControl>

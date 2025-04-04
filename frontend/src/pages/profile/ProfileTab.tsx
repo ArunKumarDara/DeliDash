@@ -14,7 +14,7 @@ interface ProfileTabProps {
         userName: string;
         phoneNumber: string;
         createdAt: string;
-        avatar: string
+        avatar?: string
     };
 }
 
@@ -45,6 +45,16 @@ export function ProfileTab({ user }: ProfileTabProps) {
     const handleSave = () => {
         mutate(formData);
     };
+
+    if (!user) {
+        return (
+            <Card className="p-6">
+                <div className="max-w-2xl space-y-6">
+                    <p>No user data available</p>
+                </div>
+            </Card>
+        );
+    }
 
     if (!isEditing) {
         return (

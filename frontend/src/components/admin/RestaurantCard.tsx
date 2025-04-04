@@ -16,7 +16,7 @@ interface Restaurant {
     rating?: number;
 }
 
-export default function RestaurantCard({ restaurant, onDelete, isDeleting, onEdit }: {
+export default function RestaurantCard({ restaurant, onDelete, isDeleting }: {
     restaurant: Restaurant;
     onDelete: (id: string) => void;
     onEdit: () => void;

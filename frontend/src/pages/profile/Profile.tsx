@@ -1,8 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MapPin, Package, User } from "lucide-react";
-import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -11,6 +8,13 @@ import { fetchAddresses } from "@/api/address";
 import { ProfileTab } from "./ProfileTab";
 import { OrdersTab } from "./OrdersTab";
 import { AddressesTab } from "./AddressesTab";
+
+interface User {
+    userName: string;
+    phoneNumber: string;
+    createdAt: string;
+    avatar: string
+}
 
 export default function Profile() {
     const { user } = useSelector((state: RootState) => state.user);
@@ -59,6 +63,17 @@ export default function Profile() {
     const orders = ordersData?.pages?.flatMap((page) => page.data) || [];
     const addresses = addressesData?.pages.flatMap((page) => page.data) || [];
 
+    if (!user) {
+        return (
+            <div className="container py-8 max-w-4xl mx-auto lg:w-4xl w-dvw md-p-0 p-4">
+                <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+                <div className="text-center py-12">
+                    <p>Please sign in to view your profile</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="container py-8 max-w-4xl mx-auto lg:w-4xl w-dvw md-p-0 p-4">
             <h1 className="text-3xl font-bold mb-8">My Profile</h1>
@@ -88,7 +103,7 @@ export default function Profile() {
                         orders={orders}
                         isLoading={isOrderLoading}
                         isError={isOrderError}
-                        isEmpty={isEmptyOrder}
+                        isEmpty={isEmptyOrder as boolean}
                         hasNextPage={hasOrderNextPage}
                         isFetchingNextPage={isOrderFetchingNextPage}
                         refetch={refetchOrders}

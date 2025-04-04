@@ -32,12 +32,13 @@ interface Payment {
 }
 interface Order {
     _id: string;
-    status: 'placed' | 'confirmed' | 'preparing' | 'out-for-delivery' | 'delivered' | 'cancelled';
+    status: string;
     totalAmount: number;
     menuItems: MenuItem[];
     addressId: {
         address: string;
         phoneNumber: string;
+        receiverName?: string;
     };
     deliveryTime: string;
     deliveryInstructions?: string;
@@ -108,7 +109,7 @@ export default function OrderConfirmation() {
         );
     }
 
-    if (isError || !data?.order) {
+    if (isError || !data) {
         toast.error("Failed to fetch order details. Please try again.");
         return (
             <div className="container mx-auto py-8 max-w-4xl text-center">
@@ -123,11 +124,9 @@ export default function OrderConfirmation() {
 
 
 
-    const order: Order = data.order;
+    const order: Order = data?.order
     const progressPercentage = getProgressPercentage(order.status);
     const isCancelled = order.status === 'cancelled';
-
-    console.log(order)
 
     // Group menu items by restaurant
     const restaurantsMap = new Map<string, MenuItem[]>();

@@ -21,7 +21,7 @@ import {
 import { useState, useCallback } from "react";
 import { debounce } from "lodash"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import Loading from "@/components/spinner/Loader";
+import DeliverySpinner from "@/components/spinner/DeliverySpinner";
 
 
 interface MenuItem {
@@ -167,7 +167,7 @@ export default function RestaurantMenu() {
                 <ScrollArea className="h-screen">
                     <div className="space-y-8">
                         {isLoading ? (
-                            <div className="flex flex-col items-center justify-center min-h-[300px] lg:w-3xl md:w-2xs w-dvw p-4 md:p-0"><Loading /></div>
+                            <div className="flex flex-col items-center justify-center min-h-[300px] lg:w-3xl md:w-2xs w-dvw p-4 md:p-0"><DeliverySpinner /></div>
                         ) : isMenuEmpty ? (
                             <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
                                 <div className="text-6xl">🍽️</div>

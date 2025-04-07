@@ -1,0 +1,6 @@
+import{b as a,j as e}from"./index-B1oV26O_.js";import{m as t}from"./proxy-0Xk5Xy8A.js";/**
+ * @license lucide-react v0.483.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const r=[["rect",{width:"20",height:"14",x:"2",y:"5",rx:"2",key:"ynyp8z"}],["line",{x1:"2",x2:"22",y1:"10",y2:"10",key:"1b3vmo"}]],i=a("CreditCard",r);function o(){return e.jsx("div",{className:"flex flex-col items-center justify-center gap-4",children:e.jsxs(t.div,{className:"relative h-16 w-16",animate:{x:[-10,10,-10]},transition:{duration:2,repeat:1/0,ease:"easeInOut"},children:[e.jsx("div",{className:"absolute top-1/2 left-1/2 h-2 w-8 bg-gray-700 transform -translate-x-1/2 -translate-y-1/2"}),e.jsx(t.div,{className:"absolute top-1/2 left-1/4 h-6 w-6 border-2 border-gray-700 rounded-full transform -translate-x-1/2 -translate-y-1/2",animate:{rotate:360},transition:{duration:1,repeat:1/0,ease:"linear"}}),e.jsx(t.div,{className:"absolute top-1/2 left-3/4 h-6 w-6 border-2 border-gray-700 rounded-full transform -translate-x-1/2 -translate-y-1/2",animate:{rotate:360},transition:{duration:1,repeat:1/0,ease:"linear"}})]})})}export{i as C,o as D};

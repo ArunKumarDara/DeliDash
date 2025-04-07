@@ -25,7 +25,9 @@ const port = process.env.PORT || 5000;
     cors({
       // origin: "http://localhost:5173",
       origin: "http://172.31.3.72:3000",
+      origin: "*",
       credentials: true,
+      httpOnly: true,
     })
   );
   app.use("/api/v1/users", userRouter);

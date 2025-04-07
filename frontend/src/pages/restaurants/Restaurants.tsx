@@ -7,19 +7,12 @@ import {
     SheetContent,
     SheetTrigger,
 } from "@/components/ui/sheet"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import RestaurantCard from "./RestaurantCard"
 import FilterSidebar from "./FilterSidebar"
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { getRestaurants } from "@/api/restaurant"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import Loading from "@/components/spinner/Loader"
+import DeliverySpinner from "@/components/spinner/DeliverySpinner"
 
 interface Restaurant {
     _id: string;
@@ -84,8 +77,7 @@ export default function Restaurants() {
                         Discover restaurants in your area
                     </p>
                 </div>
-
-                <div className="flex gap-4">
+                <div className="flex gap-4 px-4 md:px-0">
                     <div className="flex w-full md:w-[300px]">
                         <Input
                             placeholder="Search restaurants..."
@@ -129,20 +121,6 @@ export default function Restaurants() {
                     />
                 </div>
                 <div className="flex-1">
-                    <div className="flex justify-end mb-4">
-                        <Select defaultValue="recommended">
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Sort by" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="recommended">Recommended</SelectItem>
-                                <SelectItem value="rating">Rating</SelectItem>
-                                <SelectItem value="delivery-time">Delivery Time</SelectItem>
-                                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
                     <ScrollArea className="h-screen">
                         {isEmpty && !isLoading && (
                             <div className="flex flex-col items-center justify-center min-h-[300px] space-y-4 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
@@ -162,7 +140,7 @@ export default function Restaurants() {
                             </div>
                         )}
 
-                        {isLoading ? <div className="lg:w-3xl md:w-2xs w-dvw flex justify-center items-center p-4 md:p-0"><Loading /></div> :
+                        {isLoading ? <div className="lg:w-3xl md:w-2xs w-dvw flex justify-center items-center p-4 md:p-0"><DeliverySpinner /></div> :
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:w-3xl md:w-2xs w-dvw p-4 md:p-0">
                                 {data?.pages.map((page) =>
                                     page.data.map((restaurant: Restaurant) => (

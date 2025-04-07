@@ -6,7 +6,7 @@ import { getUser } from "../../api/user"
 import { useDispatch } from 'react-redux'
 import { loginUser } from '@/store/userSlice'
 import { useEffect } from 'react'
-import Loading from '@/components/spinner/Loader'
+import DeliverySpinner from '@/components/spinner/DeliverySpinner'
 
 const Layout = () => {
 
@@ -28,7 +28,7 @@ const Layout = () => {
     if (isPending) {
         return (
             <div className='h-screen w-full flex justify-center items-center'>
-                <Loading />
+                <DeliverySpinner />
             </div>
         )
     }

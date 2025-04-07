@@ -21,15 +21,15 @@ const port = process.env.PORT || 5000;
 
   app.use(express.json());
   app.use(cookieParser());
-  // app.use(
-  //   cors({
-  //     // origin: "http://localhost:5173",
-  //     origin: "http://172.31.3.72:3000" || "http://localhost:3000",
-  //     // origin: "*",
-  //     credentials: true,
-  //     // httpOnly: true,
-  //   })
-  // );
+  app.use(
+    cors({
+      // origin: "http://localhost:5173",
+      origin: "http://3.6.240.135:3000" || "http://localhost:3000",
+      // origin: "*",
+      credentials: true,
+      // httpOnly: true,
+    })
+  );
   app.use(cors());
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/restaurants", restaurantRouter);

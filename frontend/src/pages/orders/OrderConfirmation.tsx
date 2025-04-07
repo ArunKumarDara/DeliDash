@@ -103,7 +103,7 @@ export default function OrderConfirmation() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto py-8 max-w-4xl h-full">
+            <div className="container mx-auto py-8 max-w-4xl h-screen flex items-center justify-center">
                 <DeliverySpinner />
             </div >
         );

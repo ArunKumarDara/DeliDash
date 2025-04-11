@@ -1,6 +1,5 @@
 import {
     Card,
-    CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
@@ -21,7 +20,7 @@ interface Restaurant {
     avatar: string
 }
 
-const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisineType, rating, avatar }) => {
+const RestaurantCard: FC<Restaurant> = ({ _id, name, cuisineType, rating, avatar }) => {
     const navigate = useNavigate()
 
     return (

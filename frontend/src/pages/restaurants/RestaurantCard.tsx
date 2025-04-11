@@ -48,13 +48,6 @@ const RestaurantCard: FC<Restaurant> = ({ _id, name, address, phoneNumber, cuisi
                     </Badge>
                 </div>
             </CardHeader>
-
-            <CardContent>
-                <div className="flex flex-col items-center gap-1 justify-between text-sm">
-                    <span className="text-muted-foreground">{address}</span>
-                    <span className="text-muted-foreground">{`+91 ${phoneNumber}`}</span>
-                </div>
-            </CardContent>
         </Card>
     )
 }

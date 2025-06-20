@@ -23,8 +23,8 @@ const port = process.env.PORT || 5000;
   app.use(cookieParser());
   app.use(
     cors({
-      origin: "http://localhost:5173",
-      // origin: "http://3.6.240.135:3000",
+      // origin: "http://localhost:5173",
+      origin: "https://dinexpress-ts2k.onrender.com",
       // origin: "*",
       credentials: true,
       // httpOnly: true,

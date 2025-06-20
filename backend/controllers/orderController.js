@@ -17,8 +17,6 @@ export const addOrder = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    console.log(addressId, deliveryTime, menuItems, totalAmount, payment);
-
     const data = {
       merchantId: process.env.MERCHANT_ID,
       merchantTransactionId: payment.transactionId,
@@ -39,23 +37,6 @@ export const addOrder = async (req, res) => {
     const sha256 = crypto.createHash(sha256).update(string).digest("hex");
 
     const checksum = sha256 + "###" + process.env.SALT_INDEX;
-
-    // const newOrder = new Order({
-    //   addressId,
-    //   deliveryTime,
-    //   deliveryInstructions,
-    //   menuItems,
-    //   totalAmount,
-    //   paymentMethod,
-    //   userId,
-    // });
-    // let savedOrder = await newOrder.save();
-
-    // savedOrder = await savedOrder.populate([
-    //   { path: "menuItems.item", model: "MenuItem" },
-    //   { path: "menuItems.restaurant", model: "Restaurant" },
-    //   { path: "addressId", model: "Address" },
-    // ]);
 
     return res
       .status(201)
